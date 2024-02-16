@@ -14,7 +14,7 @@
 	<artifactId>o4g-xwiki-spring-boot-starter</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>o4g-xwiki-spring-boot-starter</name>
-	<description>A Xwiki Spring Starter, allowing authentication delegation and content retrieval </description>
+	<description>A Xwiki Spring Starter, allowing authentication delegation and content retrieval</description>
 	
 	<properties>
 		<java.version>21</java.version>
