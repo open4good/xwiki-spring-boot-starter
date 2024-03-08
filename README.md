@@ -1,11 +1,46 @@
 
 
+# The project: Spring Boot Starter - o4g-xwiki
 
-Que des GET !!
+Spring Boot Starter O4G-XWIKI offers services to retrieve xwiki objects via XWIKI REST api.
 
 
+# Enabling the O4G-XWIKI starter
 
-Properties to set
+To add the o4g-xwiki starter to a Maven-based project,
+add the following dependency:
+
+
+	<dependencies>
+		<dependency>
+			<groupId>org.open4goods</groupId>
+			<artifactId>o4g-xwiki-spring-boot-starter</artifactId>
+			<version>0.0.1-SNAPSHOT</version
+		</dependency>
+	</dependencies>
+----
+
+For Gradle, use the following declaration:
+
+	dependencies {
+		implementation 'org.open4goods:o4g-xwiki-spring-boot-starter'
+	}
+----
+
+
+# Data Model
+
+# Services
+
+* **getPages** TODO:
+
+* **getPageList** TODO:
+  
+# Properties 
+
+  The following properties should be set in the calling app
+  
+  Properties to set
 
 // pour les appel autres que rest ex: /bin/view
 xwiki-o4g.baseUrl= https://wiki.nudger.fr
@@ -15,9 +50,7 @@ xwiki-o4g.api.entryPoint= https://wiki.nudger.fr/rest
 xwiki-o4g.api.wiki=xwiki
 
 
-
-xwiki-o4g.auth.password= nudger
-xwiki-o4g.auth.username= nudger
-
 xwiki-o4g.httpsOnly= true
 xwiki-o4g.media= json
+  
+  
