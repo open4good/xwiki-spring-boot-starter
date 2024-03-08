@@ -1,0 +1,5 @@
+
+%GROUPES%{{velocity}}
+#set($allGroupsInAllWikis = $services.user.group.getGroupsFromAllWikis($xcontext.userReference))
+$allGroupsInAllWikis
+{{/velocity}}%/GROUPES%
