@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
-
+import org.open4goods.xwiki.authentication.XwikiAuthenticationProvider;
 import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.open4goods.xwiki.services.XWikiService;
 import org.slf4j.Logger;
@@ -57,8 +57,14 @@ public class XWikiServiceConfiguration {
 		try {
 			pageService = new XWikiService(restTemplate, xWikiProperties);
 		} catch(Exception e) {
-			logger.error("Unable to create XWikiPageService as bean. error message {}", e.getMessage());
+			logger.error("Unable to create XWikiService as bean. error message {}", e.getMessage());
 		}
 		return pageService;
 	}
+	
+	@Bean
+	XwikiAuthenticationProvider getAuthenticationProvider(XWikiService xwikiService) {
+		return new XwikiAuthenticationProvider(xwikiService);
+	}
+	
 }

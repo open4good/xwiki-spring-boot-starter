@@ -1,32 +1,49 @@
 package org.open4goods.xwiki.authentication;
 
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.open4goods.xwiki.services.XWikiService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 
 
-@Profile("!dev")
+
 /**
  * A spring authentication provider that relies on Xwiki
  * @author Goulven.Furet
  *
  */
+
+//TODO:  gérer le profile par les props ?? 
+//@Profile("!dev")
+//@Component
+//@DependsOn("XWikiService")
+//@ConditionalOnProperty(name = "xwiki.spring.profile") 
 public class XwikiAuthenticationProvider implements AuthenticationProvider {
 
-
-	@Autowired XWikiService xwikiService;
+	//@Autowired 
+	XWikiService xwikiService;
+	
+	public XwikiAuthenticationProvider(XWikiService xwikiService) {
+		this.xwikiService = xwikiService;
+	}
 	
 	@Override
 	public boolean supports(Class<?> authentication) {
@@ -40,27 +57,21 @@ public class XwikiAuthenticationProvider implements AuthenticationProvider {
 		String user = authentication.getName();
 
 		List<String> groups  = new ArrayList<String>();
+		try {
+			groups = xwikiService.login(user, password);
+		} catch (Exception e) {
+			// error messages have been managed in login method
+			throw new XwikiAuthenticationException(e.getMessage());
+		} 
 		
-		// TODO : Have to implement back the group logic
-		
-//		try {
-//			groups = xwikiService.loginAndGetGroups(user, password);
-//		} catch (TechnicalException e) {
-//			throw new InternalAuthenticationServiceException(e.getMessage());
-//		} catch (InvalidParameterException e) {
-//			throw new BadCredentialsException("Bad user/password");
-//		}
-
 		List<GrantedAuthority> grantedAuths = new ArrayList<>();
-
-		groups.stream().forEach(e ->  {
-			grantedAuths.add(new SimpleGrantedAuthority(e));
-			grantedAuths.add(new SimpleGrantedAuthority("ROLE_" +e));
-		});
-
-		return new UsernamePasswordAuthenticationToken(authentication.getName(), authentication.getCredentials(),
-				grantedAuths);
-
+		if( groups != null ) {
+			groups.stream().forEach(e ->  { 
+				grantedAuths.add(new SimpleGrantedAuthority( e.replace("xwiki:XWiki.", "").trim().toUpperCase() ));
+				//grantedAuths.add(new SimpleGrantedAuthority( "ROLE_" + e.replace("xwiki:XWiki.", "").trim().toUpperCase() ));
+			});
+		}
+		
+		return new UsernamePasswordAuthenticationToken(authentication.getName(), authentication.getCredentials(), grantedAuths);
 	}
-
 }

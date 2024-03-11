@@ -8,41 +8,56 @@ package org.open4goods.xwiki.config;
  */
 public class XWikiResourcesPath {
 
-	public static final String WIKIS_PATH = "wikis";
-	public static final String SPACES_PATH = "spaces";
-	public static final String PAGES_PATH = "pages";
-	public static final String OBJECTS_PATH = "objects";
-	public static final String URI_SEPARATOR = "/";
+	private static final String WIKIS_PATH = "wikis";
+	private static final String SPACES_PATH = "spaces";
+	private static final String PAGES_PATH = "pages";
+	private static final String OBJECTS_PATH = "objects";
+	private static final String URI_SEPARATOR = "/";
 	
-	public static final String ADMIN_SPACE = "XWiki";
+	private static final String ADMIN_SPACE = "XWiki";
 	
 	// classes
-	public static final String USERS_CLASNAME = "XWiki.XWikiUsers";
-	public static final String GROUPS_CLASNAME = "XWiki.XWikiGroups";
-	public static final String RIGHTS_CLASNAME = "XWiki.XWikiRights";
+	private static final String USERS_CLASNAME = "XWiki.XWikiUsers";
+	private static final String GROUPS_CLASNAME = "XWiki.XWikiGroups";
+	//public static final String RIGHTS_CLASNAME = "XWiki.XWikiRights";
 	// query
-	public static final String QUERY_USERS = "query?q=object:" + USERS_CLASNAME;
-	public static final String QUERY_GROUPS = "query?q=object:" + GROUPS_CLASNAME;	
-		
+	private static final String QUERY_USERS = "query?q=object:" + USERS_CLASNAME;
+	private static final String QUERY_GROUPS = "query?q=object:" + GROUPS_CLASNAME;	
+	
+	// login
+	private static final String CURRENT_USER_GROUPS = "https://wiki.nudger.fr/bin/view/testGroups/currentUserGroups";
 
+	// 
 	
 	private String baseUrl;
 	private String apiEntryPoint;
 	private String wikiName;
+
 	
+	/**
+	 * 
+	 * @param baseUrl
+	 * @param apiEntryPoint
+	 * @param wikiName
+	 */
 	public XWikiResourcesPath(String baseUrl, String apiEntryPoint, String wikiName) {
 		this.baseUrl = baseUrl;
 		this.apiEntryPoint = apiEntryPoint;
 		this.wikiName = wikiName;
 	}
 	
+	public String getApiEntryPoint() {
+		return 	this.baseUrl +
+				URI_SEPARATOR +
+				this.apiEntryPoint;
+	}
 	/**
 	 * Return endpoint to wiki
 	 * returned path ends with '/' 
 	 * @return
 	 */
 	public String getWikisEndpoint() {
-		return this.apiEntryPoint +
+		return getApiEntryPoint() +
 				URI_SEPARATOR +
 				WIKIS_PATH +
 				URI_SEPARATOR +
@@ -103,7 +118,7 @@ public class XWikiResourcesPath {
 	
 
 	public String getGroupsEndpoint() {
-		return this.apiEntryPoint +
+		return getApiEntryPoint() +
 				URI_SEPARATOR +
 				WIKIS_PATH +
 				URI_SEPARATOR +
@@ -115,7 +130,7 @@ public class XWikiResourcesPath {
 	}
 	
 	public String getUsersEndpoint() {
-		return this.apiEntryPoint +
+		return getApiEntryPoint() +
 				URI_SEPARATOR +
 				WIKIS_PATH +
 				QUERY_USERS;
@@ -125,4 +140,45 @@ public class XWikiResourcesPath {
 		return getPageEndpoint(ADMIN_SPACE, userName);
 	}
 	
+	
+	/**
+	 * return the endpoint to query all groups
+	 * @return
+	 */
+	public String getQueryGroupsEndpoint() {
+		return QUERY_GROUPS;
+	}
+	
+	/**
+	 * return the endpoint to query all users
+	 * @return
+	 */
+	public String getQueryUsersEndpoint() {
+		return QUERY_USERS;
+	}
+	
+	/**
+	 * return the xwiki Users classname's value 
+	 * @return
+	 */
+	public String getUsersClassName() {
+		return USERS_CLASNAME;
+	}
+	
+	/**
+	 * return the xwiki Groups classname's value 
+	 * @return
+	 */
+	public String getGroupsClassName() {
+		return GROUPS_CLASNAME;
+	}
+	
+	
+	/**
+	 * Endpoint to retrieve logged user's groups
+	 * @return
+	 */
+	public String getCurrentUserGroupsEndpoint() {
+		return CURRENT_USER_GROUPS;
+	}
 }

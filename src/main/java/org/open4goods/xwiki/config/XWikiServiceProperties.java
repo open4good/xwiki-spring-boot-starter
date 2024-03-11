@@ -11,21 +11,22 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties()
 public class XWikiServiceProperties{
 	
-	@Value( "${xwiki-o4g.baseUrl}" )
+	@Value( "${xwiki.baseUrl}" )
 	public String baseUrl;
-	@Value( "${xwiki-o4g.auth.username}" )
+	@Value( "${xwiki.auth.username}" )
 	public String username;
-	@Value( "${xwiki-o4g.auth.password}" )
+	@Value( "${xwiki.auth.password}" )
 	public String password;
-	@Value( "${xwiki-o4g.httpsOnly}" )
+	@Value( "${xwiki.httpsOnly}" )
 	public boolean httpsOnly;
-	@Value( "${xwiki-o4g.media}" )
+	@Value( "${xwiki.media}" )
 	public String media;	
-	@Value( "${xwiki-o4g.api.entryPoint}" )
+	@Value( "${xwiki.api.entryPoint}" )
 	public String apiEntrypoint;	
-	@Value( "${xwiki-o4g.api.wiki}" )
+	@Value( "${xwiki.api.wiki}" )
 	public String apiWiki;
 
+	
 	public String getApiWiki() {
 		return apiWiki;
 	}

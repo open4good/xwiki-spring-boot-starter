@@ -9,12 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.open4goods.xwiki.config.XWikiRelations;
+import org.open4goods.xwiki.config.XWikiResourcesPath;
 import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -51,6 +50,7 @@ public class XWikiServiceHelper {
 	private RestTemplate restTemplate;
 	private XWikiServiceProperties xWikiProps;	
 
+	private XWikiResourcesPath resourcesPathManager;
 	/**
 	 * Used for login in order to create a local RestTemplate object
 	 */
@@ -58,6 +58,7 @@ public class XWikiServiceHelper {
 	public XWikiServiceHelper(RestTemplate restTemplate, XWikiServiceProperties xWikiProperties) {
 		this.restTemplate = restTemplate;
 		this.xWikiProps = xWikiProperties;
+		this.resourcesPathManager = new XWikiResourcesPath(xWikiProperties.getBaseUrl(), xWikiProperties.getApiEntrypoint(), xWikiProperties.apiWiki);
 	}
 
 
@@ -105,37 +106,37 @@ public class XWikiServiceHelper {
 	 * @return userPage if request succeeds, null otherwise
 	 * @throws HttpClientErrorException if non authorized
 	 */
-	public Page login( RestTemplateBuilder builder,  String userEndpoint, String user, String password ) throws HttpClientErrorException{
-
-		RestTemplate localRestTemplate =  builder.basicAuthentication(user, password).build();
-		ResponseEntity<String> response = null;
-		Page userPage = null;
-		// first clean url: url decoding, check scheme and add query params if needed
-		String updatedEndpoint = cleanUrl(userEndpoint);
-		logger.info("request xwiki server with endpoint {}", updatedEndpoint);
-
-		if(updatedEndpoint != null) {
-			try {
-				response = localRestTemplate.getForEntity(updatedEndpoint, String.class);
-			} catch(RestClientException rec) {
-				logger.warn("RestClientException exception  - uri:{} - error:{}", updatedEndpoint, rec.getMessage());
-			} catch(Exception e) {
-				logger.warn("Exception while trying to reach endpoint:{} - error:{}", updatedEndpoint, e.getMessage());
-			}
-			// check response status code
-			if (null != response ) {
-				if( response.getStatusCode().is4xxClientError() )  {
-					throw new HttpClientErrorException(response.getStatusCode());
-				} else if(! response.getStatusCode().is2xxSuccessful()) {
-					logger.warn("Response returns with status code:{} - for uri:{}", response.getStatusCode(), updatedEndpoint);
-					response = null;
-				} else {
-					userPage = mapPage(updatedEndpoint);
-				}
-			} 
-		}
-		return userPage; 
-	}
+//	public Page login( RestTemplateBuilder builder,  String userEndpoint, String user, String password ) throws HttpClientErrorException{
+//
+//		RestTemplate localRestTemplate =  builder.basicAuthentication(user, password).build();
+//		ResponseEntity<String> response = null;
+//		Page userPage = null;
+//		// first clean url: url decoding, check scheme and add query params if needed
+//		String updatedEndpoint = cleanUrl(userEndpoint);
+//		logger.info("request xwiki server with endpoint {}", updatedEndpoint);
+//
+//		if(updatedEndpoint != null) {
+//			try {
+//				response = localRestTemplate.getForEntity(updatedEndpoint, String.class);
+//			} catch(RestClientException rec) {
+//				logger.warn("RestClientException exception  - uri:{} - error:{}", updatedEndpoint, rec.getMessage());
+//			} catch(Exception e) {
+//				logger.warn("Exception while trying to reach endpoint:{} - error:{}", updatedEndpoint, e.getMessage());
+//			}
+//			// check response status code
+//			if (null != response ) {
+//				if( response.getStatusCode().is4xxClientError() )  {
+//					throw new HttpClientErrorException(response.getStatusCode());
+//				} else if(! response.getStatusCode().is2xxSuccessful()) {
+//					logger.warn("Response returns with status code:{} - for uri:{}", response.getStatusCode(), updatedEndpoint);
+//					response = null;
+//				} else {
+//					userPage = mapPage(updatedEndpoint);
+//				}
+//			} 
+//		}
+//		return userPage; 
+//	}
 
 	/**
 	 * Map 'Pages' object from json response endpoint
@@ -548,7 +549,7 @@ public class XWikiServiceHelper {
 		Xwiki xwiki = null;
 		String wikisHref = null;
 		// get response from rest server
-		String endpoint = xWikiProps.getApiEntrypoint();
+		String endpoint = resourcesPathManager.getApiEntryPoint();
 		ResponseEntity<String> response = getRestResponse(endpoint);
 		if (response != null ) {
 			xwiki = deserializeXwiki(response);

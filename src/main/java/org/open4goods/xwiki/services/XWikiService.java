@@ -1,11 +1,17 @@
 package org.open4goods.xwiki.services;
 
 
+import java.lang.reflect.Array;
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.open4goods.xwiki.config.XWikiRelations;
 import org.open4goods.xwiki.config.XWikiResourcesPath;
 import org.open4goods.xwiki.config.XWikiServiceProperties;
@@ -13,8 +19,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.UnknownHttpStatusCodeException;
 import org.xwiki.rest.model.jaxb.Attachment;
 import org.xwiki.rest.model.jaxb.Attachments;
 import org.xwiki.rest.model.jaxb.ObjectSummary;
@@ -233,20 +242,73 @@ public class XWikiService {
 		return page;
 	}
 	
+	
 	/**
-	 * login with username/password
+	 * Login on xwiki and return groups belonging to the current user
 	 * 
-	 * @param builder inject the default RestTemplateBuilder bean provided by Spring Boot to create a local RestTemplate
-	 * @param userName
+	 * @param userName current username
 	 * @param password
-	 * @return user Page if login succeeds
-	 * @throws HttpClientErrorException if response http status code equals to 4xx
+	 * @return List of groups belonging to the current user
+	 * @throws Exception
 	 */
-	public Page login( String userName, String password) throws HttpClientErrorException {
-		Page page = null;
-		String endpoint = resourcesPathManager.getPageEndpoint(XWikiResourcesPath.ADMIN_SPACE, userName);	
-		page = helper.login(localRestTemplateBuilder, endpoint, userName, password);
-		return page;
+	public List<String> login( String userName, String password) throws Exception {
+		
+		List<String> groups = null;
+		String endpoint = resourcesPathManager.getCurrentUserGroupsEndpoint();
+		
+		RestTemplate localRestTemplate =  localRestTemplateBuilder.basicAuthentication(userName, password).build();
+		ResponseEntity<String> response = null;
+
+		// first clean url: url decoding, check scheme and add query params if needed
+		String updatedEndpoint = helper.cleanUrl(endpoint);
+		logger.info("request xwiki server with endpoint {}", updatedEndpoint);
+
+		if(updatedEndpoint != null) {
+			try {
+				response = localRestTemplate.getForEntity(updatedEndpoint, String.class);
+			} 
+			// HTTP status 4xx
+			catch(HttpClientErrorException e) {
+				logger.warn("Client error - uri:{} - error:{}", updatedEndpoint, e.getStatusCode().toString());
+				throw new Exception(e.getStatusText());
+			} 
+			// HTTP status 5xx
+			catch(HttpServerErrorException e) {
+				logger.warn("Server error - uri:{} - error:{}", updatedEndpoint, e.getStatusCode().toString());
+				throw new Exception(e.getStatusText());
+			} 
+			//  unknown HTTP status
+			catch(UnknownHttpStatusCodeException e) {
+				logger.warn("Server error response  - uri:{} - error:{}", updatedEndpoint, e.getStatusCode().toString());
+				throw new Exception("Login error");
+			} 
+			// other errors
+			catch(Exception e) {
+				logger.warn("Exception while trying to reach endpoint:{} - error:{}", updatedEndpoint, e.getMessage());
+				throw new Exception("Login error");
+			}
+			
+			// check response status code
+			if (null != response && response.getStatusCode().is2xxSuccessful()) {
+				try {
+					// parse and get groups
+					Document doc = Jsoup.parse(response.getBody());
+					Element div = doc.getElementById("xwikicontent");
+					String content = div.text();					
+					logger.debug("Groups retrieved in html:" + content);
+					groups = Arrays.asList(content.substring(1, content.length() - 1).split(","));
+					
+				} catch( Exception e ) {
+					// TODO: how to manage this error: login succeedded but parsing error !!
+					logger.warn("Exception while searching groups in html response: {}", response.getBody());
+					throw new Exception("Groups parsing error");
+				}
+			} else {
+				logger.warn("Response returns with status code:{} - for uri:{}", response.getStatusCode(), updatedEndpoint);
+				response = null;
+			}
+		}
+		return groups;
 	}
 	
 	/**
@@ -262,7 +324,7 @@ public class XWikiService {
 			String propertiesUri = helper.getHref(XWikiRelations.REL_OBJECT, user.getLinks());
 			Objects objects = helper.getObjects(propertiesUri);
 			// then get properties from objects (look for an object from class "XWikiUsers")
-			properties =  helper.getProperties(objects, XWikiResourcesPath.USERS_CLASNAME);
+			properties =  helper.getProperties(objects, resourcesPathManager.getUsersClassName());
 		}
 		return properties;
 	}
