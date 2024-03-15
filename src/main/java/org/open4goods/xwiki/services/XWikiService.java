@@ -1,8 +1,16 @@
 package org.open4goods.xwiki.services;
 
 
-import java.lang.reflect.Array;
-import java.text.MessageFormat;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.URI;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,9 +27,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.UnknownHttpStatusCodeException;
 import org.xwiki.rest.model.jaxb.Attachment;
@@ -50,17 +62,24 @@ public class XWikiService {
 	@Autowired
 	private RestTemplateBuilder localRestTemplateBuilder;
 	
-	public XWikiService (RestTemplate restTemplate, XWikiServiceProperties xWikiProperties) throws Exception {
+	private RestTemplate restTemplate;
+	
+	public XWikiService (RestTemplate restTemplate, RestTemplate webTemplate, XWikiServiceProperties xWikiProperties) throws Exception {
 		this.xWikiProperties = xWikiProperties;
-		helper = new XWikiServiceHelper(restTemplate, xWikiProperties);
-		this.resourcesPathManager = new XWikiResourcesPath(xWikiProperties.getBaseUrl(), xWikiProperties.getApiEntrypoint(), xWikiProperties.apiWiki);
+		this.restTemplate = restTemplate;
+		helper = new XWikiServiceHelper(xWikiProperties, restTemplate, webTemplate);
+		this.resourcesPathManager = new XWikiResourcesPath(xWikiProperties.getBaseUrl(), xWikiProperties.getApiEntrypoint(), xWikiProperties.getApiWiki());
 		
 		// get all available wikis and check that the targeted one exists
 		if( xWikiProperties.getApiWiki() == null || ! helper.checkWikiExists(xWikiProperties.getApiWiki()) ) {
-			throw new Exception("The targeted wiki " + xWikiProperties.getApiWiki() + " does not exist");
+			throw new Exception("The targeted wiki '" + xWikiProperties.getApiWiki() + "' does not exist");
 		}
 	}
 	
+	
+	public String getBaseUrl() {
+		return resourcesPathManager.getBaseUrl();
+	}
 	
 	/**
 	 * 
@@ -328,4 +347,104 @@ public class XWikiService {
 		}
 		return properties;
 	}
+	
+	//////////////////////////////
+	//							//
+	//		VIEW REQUESTS		//
+	//							//
+	//////////////////////////////
+	
+	/**
+	 * 
+	 * @param xwikirelativePath
+	 * @return
+	 */
+	
+	/**
+	 * Returns xwiki web server response from wikiPage
+	 * with an absolute or relative path
+	 * @param xwikiPath path to web page
+	 * @param withAbsolutePath true if 'xwikiPath' is absolute
+	 * @return
+	 */
+	public ResponseEntity<String> getWebPage( String xwikiPath, boolean withAbsolutePath ) {
+		String xwikiWebUrl = URLDecoder.decode(xwikiPath, Charset.defaultCharset());
+		if( ! withAbsolutePath ) {
+			xwikiWebUrl = resourcesPathManager.getViewpath() + xwikiWebUrl;
+		} 
+		return helper.getWebResponse( xwikiWebUrl );
+	}
+	
+	/**
+	 * Get the absolute url to web page
+	 * @param xwikiPath
+	 * @return
+	 */
+	public String getWebPageUrl( String xwikiPath ) {	
+		return resourcesPathManager.getViewpath() + URLDecoder.decode(xwikiPath, Charset.defaultCharset());
+	}
+	
+	/**
+	 * Get the URL of a Page attachment (image...) given its name and space
+	 * @param space
+	 * @param name
+	 * @param attachmentName
+	 * @return
+	 */
+	public String getAttachmentUrl(String space, String name, String attachmentName) {
+		return resourcesPathManager.getDownloadAttachlmentUrl(space, name, attachmentName);
+	}
+	
+	/**
+	 * 
+	 * @param url
+	 * @return
+	 */
+	public byte[] downloadAttachment( String url ) {
+		byte[] blob = null;
+		ResponseEntity<byte[]> response = helper.downloadAttachment(url);
+		if( response != null ) {
+			blob = response.getBody();
+		}
+		return blob;
+	}
+	
+	
+	/**
+	 * Download the full XAR wiki file
+	 * @param destFile
+	 * @throws TechnicalException
+	 * @throws InvalidParameterException
+	 */
+	public void exportXwikiContent ( File destFile) {
+
+		// Optional Accept header
+		RequestCallback requestCallback = request -> {
+			try (OutputStreamWriter writer = new OutputStreamWriter(request.getBody(), StandardCharsets.UTF_8)) {
+				writer.write("name=all&description=&licence=&author=XWiki.Admin&version=&history=false&backup=true");
+
+			} catch(IOException ioe) {
+
+			} catch(Exception e) {
+
+			}
+		};
+
+		// Streams the response instead of loading it all in memory
+		ResponseExtractor<Void> responseExtractor = response -> {
+			// Here I write the response to a file but do what you like
+			Path path = Paths.get(destFile.getAbsolutePath());
+			Files.copy(response.getBody(), path);
+			return null;
+		};
+
+		if (destFile.exists()) {
+			destFile.delete();
+		}
+		
+		
+		restTemplate.execute(URI.create( resourcesPathManager.getBaseUrl() + "/xwiki/bin/export/XWiki/XWikiPreferences?editor=globaladmin&section=Export"), HttpMethod.POST, requestCallback, responseExtractor);
+	}
+
+
 }

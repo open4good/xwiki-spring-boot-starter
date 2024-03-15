@@ -8,6 +8,7 @@ package org.open4goods.xwiki.config;
  */
 public class XWikiResourcesPath {
 
+	// REST CONSTANTS
 	private static final String WIKIS_PATH = "wikis";
 	private static final String SPACES_PATH = "spaces";
 	private static final String PAGES_PATH = "pages";
@@ -24,10 +25,18 @@ public class XWikiResourcesPath {
 	private static final String QUERY_USERS = "query?q=object:" + USERS_CLASNAME;
 	private static final String QUERY_GROUPS = "query?q=object:" + GROUPS_CLASNAME;	
 	
+	
+	// VIEW CONSTANTS 
+	private static final String VIEW_PATH = "bin/view";
+	
+	// download 
+	private static final String DOWNLOAD_PATH = "bin/download";
+	
 	// login
-	private static final String CURRENT_USER_GROUPS = "https://wiki.nudger.fr/bin/view/testGroups/currentUserGroups";
+	private static final String CURRENT_USER_GROUPS_PATH = "testGroups/currentUserGroups";
 
-	// 
+	// 	private static final String CURRENT_USER_GROUPS_PATH = "https://wiki.nudger.fr/bin/view/testGroups/currentUserGroups";
+
 	
 	private String baseUrl;
 	private String apiEntryPoint;
@@ -46,11 +55,64 @@ public class XWikiResourcesPath {
 		this.wikiName = wikiName;
 	}
 	
+	public String getBaseUrl() {
+		return this.baseUrl;
+	}
+	
+	public String getWikiName() {
+		return this.wikiName;
+	}
+	
+	/**
+	 * returns the rest api entry point (just before /{wikis/wikiname})
+	 * @return
+	 */
 	public String getApiEntryPoint() {
-		return 	this.baseUrl +
+		return 	getBaseUrl() +
 				URI_SEPARATOR +
 				this.apiEntryPoint;
 	}
+	
+	/**
+	 * returns the path to get xwiki web page
+	 * @return
+	 */
+	public String getViewpath() {
+		return getBaseUrl() +
+				URI_SEPARATOR +
+				VIEW_PATH +
+				URI_SEPARATOR;
+	}
+	
+	
+	/**
+	 * returns the path to get xwiki web page
+	 * @return
+	 */
+	public String getDownloadpath() {
+		return getBaseUrl() +
+				URI_SEPARATOR +
+				DOWNLOAD_PATH+
+				URI_SEPARATOR;
+	}
+	
+	/**
+	 * returns the path to get xwiki web page
+	 * @return
+	 */
+	public String getDownloadAttachlmentUrl(String space, String name, String attachmentName) {
+		return getBaseUrl() +
+				URI_SEPARATOR +
+				DOWNLOAD_PATH+
+				URI_SEPARATOR +
+				space +
+				URI_SEPARATOR +
+				name + 
+				URI_SEPARATOR +
+				attachmentName;
+				
+	}
+	
 	/**
 	 * Return endpoint to wiki
 	 * returned path ends with '/' 
@@ -61,7 +123,7 @@ public class XWikiResourcesPath {
 				URI_SEPARATOR +
 				WIKIS_PATH +
 				URI_SEPARATOR +
-				this.wikiName +
+				getWikiName() +
 				URI_SEPARATOR;
 	}
 
@@ -179,6 +241,10 @@ public class XWikiResourcesPath {
 	 * @return
 	 */
 	public String getCurrentUserGroupsEndpoint() {
-		return CURRENT_USER_GROUPS;
+		return 	getBaseUrl() +
+				URI_SEPARATOR +
+				VIEW_PATH +
+				URI_SEPARATOR +
+				CURRENT_USER_GROUPS_PATH;
 	}
 }

@@ -13,6 +13,11 @@ import org.open4goods.xwiki.config.XWikiResourcesPath;
 import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -47,7 +52,14 @@ public class XWikiServiceHelper {
 
 	private final Logger logger = LoggerFactory.getLogger(XWikiServiceHelper.class);
 
+//	@Autowired
+//	@Qualifier("restTemplate")
 	private RestTemplate restTemplate;
+//	
+//	@Autowired
+//	@Qualifier("webTemplate")	
+	private RestTemplate webTemplate;
+	
 	private XWikiServiceProperties xWikiProps;	
 
 	private XWikiResourcesPath resourcesPathManager;
@@ -55,12 +67,18 @@ public class XWikiServiceHelper {
 	 * Used for login in order to create a local RestTemplate object
 	 */
 
-	public XWikiServiceHelper(RestTemplate restTemplate, XWikiServiceProperties xWikiProperties) {
+	public XWikiServiceHelper(XWikiServiceProperties xWikiProperties,
+			RestTemplate restTemplate,
+			RestTemplate webTemplate) {
+		
 		this.restTemplate = restTemplate;
+		this.webTemplate = webTemplate;
 		this.xWikiProps = xWikiProperties;
 		this.resourcesPathManager = new XWikiResourcesPath(xWikiProperties.getBaseUrl(), xWikiProperties.getApiEntrypoint(), xWikiProperties.apiWiki);
 	}
 
+
+	// TODO: A RETIRER §§§§ refactoring suite supppression Helper
 
 
 	/**
@@ -94,6 +112,55 @@ public class XWikiServiceHelper {
 	}
 
 
+	/**
+	 * 
+	 * @param viewUrl
+	 * @return
+	 */
+	public ResponseEntity<String> getWebResponse( String xwikiWebUrl ){
+
+		ResponseEntity<String> response = null;
+		logger.info("request xwiki web server with url {}", xwikiWebUrl);
+		if(xwikiWebUrl != null) {
+			try {
+				response = webTemplate.getForEntity(xwikiWebUrl, String.class);
+			} catch(Exception e) {
+				logger.warn("Exception while trying to reach url:{} - error:{}", xwikiWebUrl, e.getMessage());
+			}
+			// check response status code
+			if (null != response && ! response.getStatusCode().is2xxSuccessful()) {
+				logger.warn("Response returns with status code:{} - for uri:{}", response.getStatusCode(), xwikiWebUrl);
+				response = null;
+			} 
+		}
+		return response;
+	}
+	
+	/**
+	 * 
+	 * @param url
+	 * @return
+	 */
+	public ResponseEntity<byte[]> downloadAttachment(String url) {
+		
+		ResponseEntity<byte[]> response = null;
+		if(url != null) {
+			try {
+				response = webTemplate.getForEntity(url, byte[].class);
+			} catch(Exception e) {
+				logger.warn("Exception while trying to reach url:{} - error:{}", url, e.getMessage());
+			}
+			// check response status code
+			if (null != response && ! response.getStatusCode().is2xxSuccessful()) {
+				logger.warn("Response returns with status code:{} - for uri:{}", response.getStatusCode(), url);
+				response = null;
+			} 
+		}
+		return response;
+		
+	}
+	
+	
 	/**
 	 * 
 	 * Try to get a Page Object from userEndpoint.

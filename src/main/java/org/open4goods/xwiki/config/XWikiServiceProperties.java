@@ -2,27 +2,36 @@ package org.open4goods.xwiki.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Properties from configuration file
  * 
  * @author Thierry.Ledan
  */
+
 @ConfigurationProperties()
 public class XWikiServiceProperties{
 	
 	@Value( "${xwiki.baseUrl}" )
 	public String baseUrl;
+	
 	@Value( "${xwiki.auth.username}" )
 	public String username;
+	
 	@Value( "${xwiki.auth.password}" )
 	public String password;
-	@Value( "${xwiki.httpsOnly}" )
+	
+	// needed for test
+	@Value( "#{new Boolean('${xwiki.httpsOnly}')} " )
 	public boolean httpsOnly;
+	
 	@Value( "${xwiki.media}" )
 	public String media;	
+	
 	@Value( "${xwiki.api.entryPoint}" )
 	public String apiEntrypoint;	
+	
 	@Value( "${xwiki.api.wiki}" )
 	public String apiWiki;
 

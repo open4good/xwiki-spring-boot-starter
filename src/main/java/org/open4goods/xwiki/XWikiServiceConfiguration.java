@@ -1,6 +1,8 @@
 package org.open4goods.xwiki;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -22,10 +24,69 @@ public class XWikiServiceConfiguration {
 	
 	private static final Logger logger = LoggerFactory.getLogger(XWikiServiceConfiguration.class);
 
-	private final XWikiServiceProperties xWikiProperties;
+	@Autowired
+	private XWikiServiceProperties xWikiProperties;
 
-	public XWikiServiceConfiguration(XWikiServiceProperties xWikiProps) {
-		this.xWikiProperties = xWikiProps;
+//	public XWikiServiceConfiguration(XWikiServiceProperties xWikiProps) {
+//		this.xWikiProperties = xWikiProps;
+//	}
+
+	
+	/**
+	 * restTemplate dedicated to restful api request
+	 * @param builder
+	 * @return
+	 */
+	@Bean( name = "restTemplate" )
+	RestTemplate restTemplate(RestTemplateBuilder builder) {
+		
+		RestTemplate restTemplate =  builder.basicAuthentication(xWikiProperties.getUsername(), xWikiProperties.getPassword()).build();
+		//restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory(xWikiProperties.getApiEntrypoint()));
+		logger.info("RestTemplate created with basic authentication to request XWIKI RESTFUL API SERVER");
+		return restTemplate;
+	}
+
+	/**
+	 * restTemplate dedicated to web request 
+	 * @param builder
+	 * @return
+	 */
+	@Bean( name = "webTemplate" )
+	RestTemplate webTemplate(RestTemplateBuilder builder) {
+		
+		RestTemplate webTemplate =  
+				builder.basicAuthentication(xWikiProperties.getUsername(), xWikiProperties.getPassword()).
+				defaultHeader("accept", "text/html ").
+				build();
+		logger.info("WebTemplate created with basic authentication and headers to request XWIKI WEB SERVER");
+		return webTemplate;
+	}
+	
+	/**
+	 * 
+	 * @param restTemplate
+	 * @param webTemplate
+	 * @param xWikiProperties
+	 * @return
+	 */
+	@Bean( name = "xwikiRestService" )
+	XWikiService getRestService( 
+			@Qualifier("restTemplate") RestTemplate restTemplate, 
+			@Qualifier("webTemplate") RestTemplate webTemplate,
+			XWikiServiceProperties xWikiProperties) {
+		
+		XWikiService xwikiService = null;
+		try {
+			xwikiService = new XWikiService(restTemplate, webTemplate, xWikiProperties);
+		} catch(Exception e) {
+			logger.error("Unable to create XWikiService as bean. error message {}", e.getMessage());
+		}
+		return xwikiService;
+	}
+	
+	@Bean( name = "xwikiAuthenticationProvider" )
+	XwikiAuthenticationProvider getAuthenticationProvider(XWikiService xwikiService) {
+		return new XwikiAuthenticationProvider(xwikiService);
 	}
 	
 	
@@ -41,30 +102,4 @@ public class XWikiServiceConfiguration {
 //		return restClient;
 //		
 //	}
-	
-	@Bean
-	RestTemplate restTemplate(RestTemplateBuilder builder) {
-		RestTemplate restTemplate =  builder.basicAuthentication(xWikiProperties.getUsername(), xWikiProperties.getPassword()).build();
-		//restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory(xWikiProperties.getApiEntrypoint()));
-		logger.info("RestTemplate Bean created with basic authentication to " + xWikiProperties.getBaseUrl());
-		return restTemplate;
-	}
-
-	
-	@Bean
-	XWikiService getRestService(RestTemplate restTemplate, XWikiServiceProperties xWikiProperties) {
-		XWikiService pageService = null;
-		try {
-			pageService = new XWikiService(restTemplate, xWikiProperties);
-		} catch(Exception e) {
-			logger.error("Unable to create XWikiService as bean. error message {}", e.getMessage());
-		}
-		return pageService;
-	}
-	
-	@Bean
-	XwikiAuthenticationProvider getAuthenticationProvider(XWikiService xwikiService) {
-		return new XwikiAuthenticationProvider(xwikiService);
-	}
-	
 }
