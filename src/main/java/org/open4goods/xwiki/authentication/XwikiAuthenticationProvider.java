@@ -61,6 +61,7 @@ public class XwikiAuthenticationProvider implements AuthenticationProvider {
 			groups = xwikiService.login(user, password);
 		} catch (Exception e) {
 			// error messages have been managed in login method
+			// TODO : Specific exception 
 			throw new XwikiAuthenticationException(e.getMessage());
 		} 
 		

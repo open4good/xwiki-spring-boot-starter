@@ -24,13 +24,16 @@ public class XWikiServiceConfiguration {
 	
 	private static final Logger logger = LoggerFactory.getLogger(XWikiServiceConfiguration.class);
 
-	@Autowired
 	private XWikiServiceProperties xWikiProperties;
 
-//	public XWikiServiceConfiguration(XWikiServiceProperties xWikiProps) {
-//		this.xWikiProperties = xWikiProps;
-//	}
+	public XWikiServiceConfiguration(XWikiServiceProperties xWikiProps) {
+		this.xWikiProperties = xWikiProps;
+	}
 
+	@Bean( name = "xwikiAuthenticationProvider" )
+	XwikiAuthenticationProvider getAuthenticationProvider(XWikiService xwikiService) {
+		return new XwikiAuthenticationProvider(xwikiService);
+	}
 	
 	/**
 	 * restTemplate dedicated to restful api request
@@ -70,10 +73,9 @@ public class XWikiServiceConfiguration {
 	 * @return
 	 */
 	@Bean( name = "xwikiRestService" )
-	XWikiService getRestService( 
+	XWikiService getXwikiRestService( 
 			@Qualifier("restTemplate") RestTemplate restTemplate, 
-			@Qualifier("webTemplate") RestTemplate webTemplate,
-			XWikiServiceProperties xWikiProperties) {
+			@Qualifier("webTemplate") RestTemplate webTemplate) {
 		
 		XWikiService xwikiService = null;
 		try {
@@ -83,14 +85,9 @@ public class XWikiServiceConfiguration {
 		}
 		return xwikiService;
 	}
-	
-	@Bean( name = "xwikiAuthenticationProvider" )
-	XwikiAuthenticationProvider getAuthenticationProvider(XWikiService xwikiService) {
-		return new XwikiAuthenticationProvider(xwikiService);
-	}
-	
-	
+
 //	@Bean
+// TODO  : Test with RestClient or remove it
 //	RestClient restClient(RestClient.Builder builder) {
 //		String auth = xWikiProperties.getUsername() + ":" + xWikiProperties.getPassword();
 //		

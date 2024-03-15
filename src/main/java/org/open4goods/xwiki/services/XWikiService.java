@@ -20,8 +20,8 @@ import java.util.Map;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.open4goods.xwiki.config.XWikiRelations;
-import org.open4goods.xwiki.config.XWikiResourcesPath;
+import org.open4goods.xwiki.config.XWikiConstantsRelations;
+import org.open4goods.xwiki.config.XWikiConstantsResourcesPath;
 import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +57,7 @@ public class XWikiService {
 	
 	private XWikiServiceProperties xWikiProperties;
 	private XWikiServiceHelper helper;
-	private XWikiResourcesPath resourcesPathManager;
+	private XWikiConstantsResourcesPath resourcesPathManager;
 	
 	@Autowired
 	private RestTemplateBuilder localRestTemplateBuilder;
@@ -68,7 +68,7 @@ public class XWikiService {
 		this.xWikiProperties = xWikiProperties;
 		this.restTemplate = restTemplate;
 		helper = new XWikiServiceHelper(xWikiProperties, restTemplate, webTemplate);
-		this.resourcesPathManager = new XWikiResourcesPath(xWikiProperties.getBaseUrl(), xWikiProperties.getApiEntrypoint(), xWikiProperties.getApiWiki());
+		this.resourcesPathManager = new XWikiConstantsResourcesPath(xWikiProperties.getBaseUrl(), xWikiProperties.getApiEntrypoint(), xWikiProperties.getApiWiki());
 		
 		// get all available wikis and check that the targeted one exists
 		if( xWikiProperties.getApiWiki() == null || ! helper.checkWikiExists(xWikiProperties.getApiWiki()) ) {
@@ -128,7 +128,7 @@ public class XWikiService {
 				String pageUrl = null;
 				
 				// get page endpoint
-				pageUrl =  helper.getHref(XWikiRelations.REL_PAGE, p.getLinks());
+				pageUrl =  helper.getHref(XWikiConstantsRelations.REL_PAGE, p.getLinks());
 				
 				// add request param to return fields that are disabled by default
 				// TODO: mapping issue: field 'properrties' does not exists in the object 'ObjectSummary'
@@ -340,7 +340,7 @@ public class XWikiService {
 		Map<String,String> properties = new HashMap<String, String>();
 		if( user != null ) {
 			// first get objects from Page
-			String propertiesUri = helper.getHref(XWikiRelations.REL_OBJECT, user.getLinks());
+			String propertiesUri = helper.getHref(XWikiConstantsRelations.REL_OBJECT, user.getLinks());
 			Objects objects = helper.getObjects(propertiesUri);
 			// then get properties from objects (look for an object from class "XWikiUsers")
 			properties =  helper.getProperties(objects, resourcesPathManager.getUsersClassName());

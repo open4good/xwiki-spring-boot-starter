@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Thierry.Ledan
  */
 
-@ConfigurationProperties()
+@ConfigurationProperties
 public class XWikiServiceProperties{
 	
 	@Value( "${xwiki.baseUrl}" )

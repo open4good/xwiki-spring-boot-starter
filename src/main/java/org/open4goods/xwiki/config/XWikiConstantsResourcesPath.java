@@ -6,7 +6,7 @@ package org.open4goods.xwiki.config;
  * 
  * @author Thierry.Ledan
  */
-public class XWikiResourcesPath {
+public class XWikiConstantsResourcesPath {
 
 	// REST CONSTANTS
 	private static final String WIKIS_PATH = "wikis";
@@ -49,7 +49,7 @@ public class XWikiResourcesPath {
 	 * @param apiEntryPoint
 	 * @param wikiName
 	 */
-	public XWikiResourcesPath(String baseUrl, String apiEntryPoint, String wikiName) {
+	public XWikiConstantsResourcesPath(String baseUrl, String apiEntryPoint, String wikiName) {
 		this.baseUrl = baseUrl;
 		this.apiEntryPoint = apiEntryPoint;
 		this.wikiName = wikiName;

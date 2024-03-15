@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.open4goods.xwiki.config.XWikiRelations;
-import org.open4goods.xwiki.config.XWikiResourcesPath;
+import org.open4goods.xwiki.config.XWikiConstantsRelations;
+import org.open4goods.xwiki.config.XWikiConstantsResourcesPath;
 import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ import io.micrometer.common.util.StringUtils;
 
 /**
  * This helper handles connection to xwiki server and mapping xwiki object from json response
- * 
+ *TODO : Merge avec XwikiService
  * @author Thierry.Ledan
  */
 public class XWikiServiceHelper {
@@ -62,7 +62,7 @@ public class XWikiServiceHelper {
 	
 	private XWikiServiceProperties xWikiProps;	
 
-	private XWikiResourcesPath resourcesPathManager;
+	private XWikiConstantsResourcesPath resourcesPathManager;
 	/**
 	 * Used for login in order to create a local RestTemplate object
 	 */
@@ -74,7 +74,7 @@ public class XWikiServiceHelper {
 		this.restTemplate = restTemplate;
 		this.webTemplate = webTemplate;
 		this.xWikiProps = xWikiProperties;
-		this.resourcesPathManager = new XWikiResourcesPath(xWikiProperties.getBaseUrl(), xWikiProperties.getApiEntrypoint(), xWikiProperties.apiWiki);
+		this.resourcesPathManager = new XWikiConstantsResourcesPath(xWikiProperties.getBaseUrl(), xWikiProperties.getApiEntrypoint(), xWikiProperties.apiWiki);
 	}
 
 
@@ -270,7 +270,7 @@ public class XWikiServiceHelper {
 		} 
 		if( objects != null ) {
 			// TODO: hard coding - objects.getObjectSummaries().get(0).getLinks() NOT GOOD , try to find the good summary !!
-			String pagePropsEndpoint = getHref(XWikiRelations.REL_PROPERTIES, objects.getObjectSummaries().get(0).getLinks());
+			String pagePropsEndpoint = getHref(XWikiConstantsRelations.REL_PROPERTIES, objects.getObjectSummaries().get(0).getLinks());
 
 			ResponseEntity<String> response = getRestResponse(pagePropsEndpoint);
 			if( response != null ) {
@@ -302,7 +302,7 @@ public class XWikiServiceHelper {
 		if( objects != null && objects.getObjectSummaries() != null && ! objects.getObjectSummaries().isEmpty() ) {
 			for( ObjectSummary object: objects.getObjectSummaries() ) {
 				if( object.getClass().equals(className) ) {
-					propertiesEndpoint = getHref(XWikiRelations.REL_PROPERTY, object.getLinks());
+					propertiesEndpoint = getHref(XWikiConstantsRelations.REL_PROPERTY, object.getLinks());
 					break;
 				}
 			}
@@ -332,7 +332,7 @@ public class XWikiServiceHelper {
 	 */
 	public Objects getPageObjects(Page page) {
 
-		String objectsUrl = getHref(XWikiRelations.REL_OBJECTS, page.getLinks());
+		String objectsUrl = getHref(XWikiConstantsRelations.REL_OBJECTS, page.getLinks());
 		return getObjects(objectsUrl);
 	}
 
@@ -371,7 +371,7 @@ public class XWikiServiceHelper {
 
 		Attachments attachments = null;
 		// get the url
-		String attachementsUrl = getHref(XWikiRelations.REL_ATTACHMENTS, page.getLinks());
+		String attachementsUrl = getHref(XWikiConstantsRelations.REL_ATTACHMENTS, page.getLinks());
 		if( StringUtils.isNotBlank(attachementsUrl) ) {
 			ResponseEntity<String> response = null;
 			response = getRestResponse(attachementsUrl);
@@ -400,7 +400,7 @@ public class XWikiServiceHelper {
 		Attachments attachments;
 		List<Attachment> attachmentsList = new ArrayList<Attachment>();
 		// get the url
-		String attachementsUrl = getHref(XWikiRelations.REL_ATTACHMENTS, page.getLinks());
+		String attachementsUrl = getHref(XWikiConstantsRelations.REL_ATTACHMENTS, page.getLinks());
 		if( StringUtils.isNotBlank(attachementsUrl) ) {
 			ResponseEntity<String> response = null;
 			response = getRestResponse(attachementsUrl);
@@ -622,7 +622,7 @@ public class XWikiServiceHelper {
 			xwiki = deserializeXwiki(response);
 			if(xwiki != null) {
 				for(Link link: xwiki.getLinks()) {
-					if(link.getRel().equals(XWikiRelations.REL_WIKIS)) {
+					if(link.getRel().equals(XWikiConstantsRelations.REL_WIKIS)) {
 						wikisHref = link.getHref();
 						break;
 					}

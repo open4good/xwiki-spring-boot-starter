@@ -6,7 +6,7 @@ package org.open4goods.xwiki.config;
  * 
  * @author Thierry.Ledan
  */
-public class XWikiRelations {
+public class XWikiConstantsRelations {
 	
 	
 	public static String REL_WIKIS 				= "http://www.xwiki.org/rel/wikis";
