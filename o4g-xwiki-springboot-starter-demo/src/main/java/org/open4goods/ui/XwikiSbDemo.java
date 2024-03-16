@@ -8,8 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Configuration;
 
 @SpringBootApplication()
-@Configuration
-
 public class XwikiSbDemo {
 
 	private static final Logger logger = LoggerFactory.getLogger(XwikiSbDemo.class);
