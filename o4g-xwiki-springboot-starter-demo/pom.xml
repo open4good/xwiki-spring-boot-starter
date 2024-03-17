@@ -7,14 +7,18 @@
 	<name>o4g-xwiki-springboot-starter-demo</name>
 
 	<parent>
-		<groupId>org.open4goods</groupId>
-		<artifactId>o4g-xwiki-springboot-starter-parent</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+	    <groupId>org.springframework.boot</groupId>
+	    <artifactId>spring-boot-starter-parent</artifactId>
+	    <version>3.1.5</version>
 	</parent>
 
 	<properties>
 		<start-class>org.open4goods.ui.Ui</start-class>
 		<main.basedir>${basedir}/../..</main.basedir>
+		<springboot.version>3.2.3</springboot.version>
+		<java.version>21</java.version>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
 	</properties>
 
 	<dependencies>
@@ -51,7 +55,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.3.0</version>
 				<configuration>
 					<excludes>
 						<!-- This is where the exclusion occurs -->
@@ -74,7 +77,6 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>${springboot.version}</version>
 				<executions>
 					<execution>
 						<goals>
