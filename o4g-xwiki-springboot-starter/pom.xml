@@ -10,6 +10,8 @@
     <version>3.1.5</version>
 </parent>
 
+	<groupId>org.open4goods</groupId>
+	<version>0.0.1-SNAPSHOT</version>
 	<artifactId>o4g-xwiki-springboot-starter</artifactId>
 	<name>o4g-xwiki-springboot-starter</name>
 

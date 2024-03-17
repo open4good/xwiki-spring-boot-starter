@@ -11,10 +11,10 @@ import org.springframework.security.authentication.AuthenticationProvider;
 @Configuration
 public class AppConfig {
 	
-	
-	@Bean AuthenticationProvider xwikiAuthenticationProvider(@Autowired XWikiService xwikiService) {
-		return new XwikiAuthenticationProvider(xwikiService);
-	}
+	// already 
+//	@Bean AuthenticationProvider xwikiAuthenticationProvider(@Autowired XWikiService xwikiService) {
+//		return new XwikiAuthenticationProvider(xwikiService);
+//	}
 	
 
 }

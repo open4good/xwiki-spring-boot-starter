@@ -32,13 +32,11 @@ import org.springframework.web.client.HttpClientErrorException;
  */
 
 //TODO:  gérer le profile par les props ?? 
+
 //@Profile("!dev")
-//@Component
-//@DependsOn("XWikiService")
 //@ConditionalOnProperty(name = "xwiki.spring.profile") 
 public class XwikiAuthenticationProvider implements AuthenticationProvider {
 
-	//@Autowired 
 	XWikiService xwikiService;
 	
 	public XwikiAuthenticationProvider(XWikiService xwikiService) {
@@ -69,7 +67,7 @@ public class XwikiAuthenticationProvider implements AuthenticationProvider {
 		if( groups != null ) {
 			groups.stream().forEach(e ->  { 
 				grantedAuths.add(new SimpleGrantedAuthority( e.replace("xwiki:XWiki.", "").trim().toUpperCase() ));
-				//grantedAuths.add(new SimpleGrantedAuthority( "ROLE_" + e.replace("xwiki:XWiki.", "").trim().toUpperCase() ));
+				grantedAuths.add(new SimpleGrantedAuthority( "ROLE_" + e.replace("xwiki:XWiki.", "").trim().toUpperCase() ));
 			});
 		}
 		
