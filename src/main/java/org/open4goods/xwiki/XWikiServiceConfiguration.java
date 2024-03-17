@@ -27,10 +27,6 @@ public class XWikiServiceConfiguration {
 	@Autowired
 	private XWikiServiceProperties xWikiProperties;
 
-//	public XWikiServiceConfiguration(XWikiServiceProperties xWikiProps) {
-//		this.xWikiProperties = xWikiProps;
-//	}
-
 	
 	/**
 	 * restTemplate dedicated to restful api request
