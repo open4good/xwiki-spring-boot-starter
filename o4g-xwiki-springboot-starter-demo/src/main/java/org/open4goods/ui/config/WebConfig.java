@@ -10,9 +10,8 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -37,13 +36,10 @@ public class WebConfig {
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 					http.authorizeRequests()
-			.anyRequest().authenticated()
-
-
-			.and().formLogin().permitAll()
-			.and().logout().permitAll();
-
-			
+					.requestMatchers(new AntPathRequestMatcher("/")).permitAll()
+//					.anyRequest().authenticated()
+		            .and().formLogin().permitAll()
+		            .and().logout().permitAll();
 			return http.build();
 
 
@@ -59,10 +55,10 @@ public class WebConfig {
 		authenticationManagerBuilder.authenticationProvider(authProvider);
 		return authenticationManagerBuilder.build();
 	}
-
-	@Bean
-	// TODO : remove ?
-	PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+//
+//	@Bean
+//	// TODO : remove ?
+//	PasswordEncoder passwordEncoder() {
+//		return new BCryptPasswordEncoder();
+//	}
 }
