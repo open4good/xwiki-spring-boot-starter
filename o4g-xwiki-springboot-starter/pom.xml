@@ -10,8 +10,8 @@
     <version>3.1.5</version>
 </parent>
 
-	<artifactId>o4g-xwiki-spring-boot-starter</artifactId>
-	<name>o4g-xwiki-spring-boot-starter</name>
+	<artifactId>o4g-xwiki-springboot-starter</artifactId>
+	<name>o4g-xwiki-springboot-starter</name>
 
 	<description>A Xwiki Spring Starter, allowing authentication delegation and
 		content retrieval</description>
