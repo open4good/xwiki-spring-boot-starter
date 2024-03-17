@@ -37,7 +37,8 @@ public class WebConfig {
 
 					http.authorizeRequests()
 					.requestMatchers(new AntPathRequestMatcher("/")).permitAll()
-//					.anyRequest().authenticated()
+					.requestMatchers(new AntPathRequestMatcher("/content")).permitAll()
+					.anyRequest().authenticated()
 		            .and().formLogin().permitAll()
 		            .and().logout().permitAll();
 			return http.build();

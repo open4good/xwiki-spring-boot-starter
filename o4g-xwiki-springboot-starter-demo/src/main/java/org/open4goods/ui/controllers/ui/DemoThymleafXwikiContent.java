@@ -8,10 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.xwiki.rest.model.jaxb.Page;
 import org.xwiki.rest.model.jaxb.Pages;
@@ -21,7 +21,7 @@ import jakarta.servlet.http.HttpServletRequest;
 // TODO : document / demo  de auth api : @PreAuthorize("hasAuthority('"+RolesConstants.ROLE_XWIKI_ALL+"')")
 // TODO : Demo de fragment xwikithymleaf
 
-@RestController
+@Controller
 @RequestMapping("/")
 public class DemoThymleafXwikiContent{
 
@@ -38,11 +38,12 @@ public class DemoThymleafXwikiContent{
 	 * @param request
 	 * @return
 	 */
-//	@GetMapping("/xwiki")
-//	public ModelAndView flushCache(final HttpServletRequest request, @RequestParam(name = "r", required = false) String redircectUrl) {
-//		xwikiService.getBaseUrl();
-//		return null;
-//	}
+	@GetMapping("/content")
+	public ModelAndView content(final HttpServletRequest request, @RequestParam(name = "r", required = false) String redircectUrl) {
+		ModelAndView modelAndView = new ModelAndView("content");
+		modelAndView.addObject("xwiki", xwikiService);
+		return modelAndView;
+	}
 
 	
 	/**
