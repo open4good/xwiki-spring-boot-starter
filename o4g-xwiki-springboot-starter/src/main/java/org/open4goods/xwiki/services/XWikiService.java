@@ -1,4 +1,4 @@
-package org.open4goods.xwikistarter.services;
+package org.open4goods.xwiki.services;
 
 
 import java.io.File;
@@ -20,9 +20,9 @@ import java.util.Map;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.open4goods.xwikistarter.config.XWikiConstantsRelations;
-import org.open4goods.xwikistarter.config.XWikiConstantsResourcesPath;
-import org.open4goods.xwikistarter.config.XWikiServiceProperties;
+import org.open4goods.xwiki.config.XWikiConstantsRelations;
+import org.open4goods.xwiki.config.XWikiConstantsResourcesPath;
+import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,11 +1,11 @@
-package org.open4goods.xwikistarter.authentication;
+package org.open4goods.xwiki.authentication;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.open4goods.xwikistarter.services.XWikiService;
+import org.open4goods.xwiki.services.XWikiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;

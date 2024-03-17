@@ -1,9 +1,9 @@
-package org.open4goods.xwikistarter;
+package org.open4goods.xwiki;
 
 
-import org.open4goods.xwikistarter.authentication.XwikiAuthenticationProvider;
-import org.open4goods.xwikistarter.config.XWikiServiceProperties;
-import org.open4goods.xwikistarter.services.XWikiService;
+import org.open4goods.xwiki.authentication.XwikiAuthenticationProvider;
+import org.open4goods.xwiki.config.XWikiServiceProperties;
+import org.open4goods.xwiki.services.XWikiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package org.open4goods.xwikistarter.authentication;
+package org.open4goods.xwiki.authentication;
 
 import org.springframework.security.core.AuthenticationException;
 

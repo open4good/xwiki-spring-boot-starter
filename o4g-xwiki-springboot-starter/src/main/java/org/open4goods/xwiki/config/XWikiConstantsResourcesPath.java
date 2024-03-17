@@ -1,4 +1,4 @@
-package org.open4goods.xwikistarter.config;
+package org.open4goods.xwiki.config;
 
 
 /**
