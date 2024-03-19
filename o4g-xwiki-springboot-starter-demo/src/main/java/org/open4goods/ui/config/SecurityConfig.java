@@ -21,7 +21,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
  * @author Goulven.Furet
  *
  */
-public class WebConfig {
+public class SecurityConfig {
 
 	@Autowired
 	@Qualifier("xwikiAuthenticationProvider")
@@ -38,7 +38,6 @@ public class WebConfig {
 					http.authorizeRequests()
 					.requestMatchers(new AntPathRequestMatcher("/", "/content")).permitAll()
 					.requestMatchers(new AntPathRequestMatcher("/protected.html")).authenticated()
-//					.anyRequest().authenticated()
 		            .and().formLogin().permitAll()
 		            .and().logout().permitAll();
 			return http.build();
