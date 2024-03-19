@@ -36,9 +36,9 @@ public class WebConfig {
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 					http.authorizeRequests()
-					.requestMatchers(new AntPathRequestMatcher("/")).permitAll()
-					.requestMatchers(new AntPathRequestMatcher("/content")).permitAll()
-					.anyRequest().authenticated()
+					.requestMatchers(new AntPathRequestMatcher("/", "/content")).permitAll()
+					.requestMatchers(new AntPathRequestMatcher("/protected.html")).authenticated()
+//					.anyRequest().authenticated()
 		            .and().formLogin().permitAll()
 		            .and().logout().permitAll();
 			return http.build();
