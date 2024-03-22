@@ -26,6 +26,9 @@ public class XWikiServiceConfiguration {
 
 	private XWikiServiceProperties xWikiProperties;
 
+	@Autowired RestTemplateBuilder localRestTemplateBuilder;
+	
+	
 	public XWikiServiceConfiguration(XWikiServiceProperties xWikiProps) {
 		this.xWikiProperties = xWikiProps;
 	}
@@ -75,16 +78,23 @@ public class XWikiServiceConfiguration {
 	@Bean( name = "xwikiRestService" )
 	XWikiService getXwikiRestService( 
 			@Qualifier("restTemplate") RestTemplate restTemplate, 
-			@Qualifier("webTemplate") RestTemplate webTemplate) {
+			@Qualifier("webTemplate") RestTemplate webTemplate
+			
+			
+			
+			) {
 		
 		XWikiService xwikiService = null;
 		try {
-			xwikiService = new XWikiService(restTemplate, webTemplate, xWikiProperties);
+			xwikiService = new XWikiService(restTemplate, webTemplate, xWikiProperties, localRestTemplateBuilder);
 		} catch(Exception e) {
 			  logger.error("Unable to create XWikiService as bean. error message {}", e.getMessage());
 		}
 		return xwikiService;
 	}
+	
+	
+	
 
 //	@Bean
 // TODO  : Test with RestClient or remove it

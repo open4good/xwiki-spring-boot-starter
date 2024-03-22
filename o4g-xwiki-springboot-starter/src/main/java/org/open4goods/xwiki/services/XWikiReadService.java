@@ -51,23 +51,22 @@ import org.xwiki.rest.model.jaxb.SearchResults;
  * This service handles XWiki rest services :
  * @author Thierry.Ledan
  */                 
-public class XWikiService {
+public class XWikiReadService {
 
-	private static Logger logger = LoggerFactory.getLogger(XWikiService.class);
+	private static Logger logger = LoggerFactory.getLogger(XWikiReadService.class);
 	
 	private XWikiServiceProperties xWikiProperties;
 	private XWikiServiceHelper helper;
 	private XWikiConstantsResourcesPath resourcesPathManager;
 	
-	
+	@Autowired
 	private RestTemplateBuilder localRestTemplateBuilder;
 	
 	private RestTemplate restTemplate;
 	
-	public XWikiService (RestTemplate restTemplate, RestTemplate webTemplate, XWikiServiceProperties xWikiProperties, RestTemplateBuilder localRestTemplateBuilder) throws Exception {
+	public XWikiReadService (RestTemplate restTemplate, RestTemplate webTemplate, XWikiServiceProperties xWikiProperties) throws Exception {
 		this.xWikiProperties = xWikiProperties;
 		this.restTemplate = restTemplate;
-		this.localRestTemplateBuilder = localRestTemplateBuilder;
 		helper = new XWikiServiceHelper(xWikiProperties, restTemplate, webTemplate);
 		this.resourcesPathManager = new XWikiConstantsResourcesPath(xWikiProperties.getBaseUrl(), xWikiProperties.getApiEntrypoint(), xWikiProperties.getApiWiki());
 //		
@@ -209,7 +208,7 @@ public class XWikiService {
 	/**
 	 * Get all groups pageName
 	 * discard "XWikiGroupTemplate"  
-	 * 
+	 * TODO : XwikiAuthService
 	 * @return
 	 */
 	public List<String> getGroupsName(){
@@ -230,7 +229,7 @@ public class XWikiService {
 	 * Get users name for a group
 	 * 
 	 * scan objects summary, user's name is set in field "headline" with the prefix "XWiki."
-	 * 
+	 * TODO : XwikiAuthenticationService
 	 * @param groupPageName
 	 * @return
 	 */
