@@ -1,27 +1,17 @@
 package org.open4goods.xwiki.authentication;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import org.open4goods.xwiki.services.XWikiAuthenticationService;
 import org.open4goods.xwiki.services.XWikiService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.Profile;
-import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
+
 
 
 
@@ -37,10 +27,10 @@ import org.springframework.web.client.HttpClientErrorException;
 //@ConditionalOnProperty(name = "xwiki.spring.profile") 
 public class XwikiAuthenticationProvider implements AuthenticationProvider {
 
-	XWikiService xwikiService;
+	XWikiAuthenticationService xwikiAuthenticationService;
 	
-	public XwikiAuthenticationProvider(XWikiService xwikiService) {
-		this.xwikiService = xwikiService;
+	public XwikiAuthenticationProvider(XWikiAuthenticationService xwikiAuthenticationService) {
+		this.xwikiAuthenticationService = xwikiAuthenticationService;
 	}
 	
 	@Override
@@ -56,7 +46,7 @@ public class XwikiAuthenticationProvider implements AuthenticationProvider {
 
 		List<String> groups  = new ArrayList<String>();
 		try {
-			groups = xwikiService.login(user, password);
+			groups = xwikiAuthenticationService.login(user, password);
 		} catch (Exception e) {
 			// error messages have been managed in login method
 			// TODO : Specific exception 
