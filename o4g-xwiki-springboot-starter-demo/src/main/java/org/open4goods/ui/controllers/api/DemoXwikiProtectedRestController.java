@@ -18,14 +18,16 @@ import org.xwiki.rest.model.jaxb.Page;
 import org.xwiki.rest.model.jaxb.Pages;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * This controller allows informations and communications from fetchers
  * @author goulven
  *
  */
-@RestController
 
+@Tag( name = "XWIKI SPRING BOOT STARTER API", description = "Rest services available for Spring Boot application")
+@RestController
 public class DemoXwikiProtectedRestController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DemoXwikiProtectedRestController.class);
@@ -51,7 +53,10 @@ public class DemoXwikiProtectedRestController {
 	}
 	
 	// http://localhost:8080/page?space=Blog&page=BlogIntroduction
-	@GetMapping("/page")
+	@Operation( summary = "Operation to fetch a xwiki Page", 
+			description = "Fetch a xwiki Page belonging to a space" 
+					+ "<br>TODO: Gestion des codes de retour http")
+	@GetMapping( value = "/page", produces = "application/json" )
 	public Page getPage( @RequestParam String space, @RequestParam String page ) {
 		Page wikiPage = xwikiReadService.getPage(space, page);
 		return wikiPage;
@@ -59,21 +64,36 @@ public class DemoXwikiProtectedRestController {
 	
 	
 	// http://localhost:8080/pages?space=Blog
-	@GetMapping("/pages")
+	@Operation( summary = "Operation to fetch a set of PageSummary", 
+			description = "Fetch all Page Summary belonging to a space" 
+					+ "<br>TODO: Gestion des codes de retour http")
+	@GetMapping( value ="/pages", produces = "application/json" )
 	public Pages getPages( @RequestParam String space ) {
 		Pages page = xwikiReadService.getPages(space);
 		return page;
 	}
 	
 	// http://localhost:8080/props?space=Blog&page=BlogIntroduction
-	@GetMapping("/props")
+	@Operation( summary = "Operation to fetch Page's properties",
+			description = "Fetch a map of properties (as String) belonging to a page in a space"
+					+ "<br>TODO: Gestion des codes de retour http")
+	@GetMapping(  value = "/props", produces = "application/json" )
 	public Map<String, String> getProperties ( @RequestParam String space, @RequestParam String page ) {
 		Map<String, String> props = xwikiReadService.getProperties(space, page);
 		return props;
 	}
 	
 	// http://localhost:8080/pagelist?space=Blog
-	@GetMapping("/pagelist")
+	@Operation( 
+			summary = "Operation to fetch a list of Page", 
+			description = "Fetch all Pages belonging to a space."
+					+ "<br>Heavy process because it needs to scan all pageSummary belonging to a space and then create a Page object from a PageSummary."
+					+ "<br>Furthermore, for each Page this process request the server in order to fetch attachments and objects belonging to this Page."
+					+ "<br>Up to 3 requests for each generated Page."
+					+ "<br>Note: Page does not have any properties."
+					+ "<br>TODO: fetch classes to Page" 
+					+ "<br>TODO: Gestion des codes de retour http")
+	@GetMapping(  value = "/pagelist", produces = "application/json" )
 	public List<Page> getPageList( @RequestParam String space ){
 		List<Page> pages = xwikiReadService.getPagesList(space);
 		return pages;
