@@ -87,8 +87,8 @@ public class DemoXwikiProtectedRestController {
 	@Operation( 
 			summary = "Operation to fetch a list of Page", 
 			description = "Fetch all Pages belonging to a space."
-					+ "<br>Heavy process because it needs to scan all pageSummary belonging to a space and then create a Page object from a PageSummary."
-					+ "<br>Furthermore, for each Page this process request the server in order to fetch attachments and objects belonging to this Page."
+					+ "<br>Heavy process because it needs to scan all PageSummary belonging to a space and then creates a Page object from a PageSummary."
+					+ "<br>Furthermore, for each Page this process requests the server in order to fetch attachments and objects belonging to this Page."
 					+ "<br>Up to 3 requests for each generated Page."
 					+ "<br>Note: Page does not have any properties."
 					+ "<br>TODO: fetch classes to Page" 

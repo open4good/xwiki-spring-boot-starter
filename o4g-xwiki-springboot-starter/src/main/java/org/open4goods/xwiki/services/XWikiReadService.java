@@ -38,10 +38,14 @@ public class XWikiReadService {
 	private XWikiServiceProperties xWikiProperties;
 	private XWikiConstantsResourcesPath resourcesPathManager;
 	private MappingService mappingService;
+	private RestTemplateService restTemplateService;
 	
-	public XWikiReadService (MappingService mappingService,  XWikiServiceProperties xWikiProperties) throws Exception {
+	public XWikiReadService (MappingService mappingService, RestTemplateService restTemplateService, XWikiServiceProperties xWikiProperties) throws Exception {
+		
 		this.xWikiProperties = xWikiProperties;
 		this.mappingService = mappingService;
+		this.restTemplateService = restTemplateService;
+		
 		this.resourcesPathManager = new XWikiConstantsResourcesPath(xWikiProperties.getBaseUrl(), xWikiProperties.getApiEntrypoint(), xWikiProperties.getApiWiki());
 
 		//		TODO: check that wiki exists !!
@@ -107,10 +111,6 @@ public class XWikiReadService {
 				
 				// add request param to return fields that are disabled by default
 				// TODO: mapping issue: field 'properties' does not exists in the object 'ObjectSummary'
-//				pageUrl = helper.addQueryParam(pageUrl, "class", "true");
-//				pageUrl = helper.addQueryParam(pageUrl, "objects", "true");
-//				pageUrl = helper.addQueryParam(pageUrl, "attachments", "true");
-				tempPage = this.mappingService.mapPage(pageUrl);
 				if( tempPage != null ) {
 					pagesList.add(tempPage);
 
@@ -121,8 +121,8 @@ public class XWikiReadService {
 						for(Attachment attachment: attachments.getAttachments()) {
 							
 							// TODO: updateUrlScheme a déplacer ou déclarer ailleurs que dans restTemplateService
-							attachment.setXwikiAbsoluteUrl(this.mappingService.updateUrlScheme(attachment.getXwikiAbsoluteUrl()));
-							attachment.setXwikiRelativeUrl(this.mappingService.updateUrlScheme(attachment.getXwikiRelativeUrl()));
+							attachment.setXwikiAbsoluteUrl(this.restTemplateService.updateUrlScheme(attachment.getXwikiAbsoluteUrl()));
+							attachment.setXwikiRelativeUrl(this.restTemplateService.updateUrlScheme(attachment.getXwikiRelativeUrl()));
 						}
 						tempPage.setAttachments(attachments);
 					}	
@@ -138,8 +138,6 @@ public class XWikiReadService {
 				}
 			}
 		}
-
-		
 		return pagesList;
 	}
 	
@@ -258,47 +256,7 @@ public class XWikiReadService {
 		}
 		return properties;
 	}
-	
-	//////////////////////////////
-	//							//
-	//		VIEW REQUESTS		//
-	//							//
-	//////////////////////////////
-	
-	
 
-	
-	/**
-	 * Get the absolute url to web page
-	 * @param xwikiPath
-	 * @return
-	 */
-	public String getWebPageUrl( String xwikiPath ) {	
-		return resourcesPathManager.getViewpath() + URLDecoder.decode(xwikiPath, Charset.defaultCharset());
-	}
-	
-	/**
-	 * Get the URL of a Page attachment (image...) given its name and space
-	 * @param space
-	 * @param name
-	 * @param attachmentName
-	 * @return
-	 */
-	public String getAttachmentUrl(String space, String name, String attachmentName) {
-		return resourcesPathManager.getDownloadAttachlmentUrl(space, name, attachmentName);
-	}
-	
-	/**
-	 * 
-	 * @param url
-	 * @return
-	 */
-	public byte[] getAttachment( String url ) {
-		return this.mappingService.downloadAttachment(url);
-	}
-	
-	
-	
 	/**
 	 * Download the full XAR wiki file
 	 * @param destFile

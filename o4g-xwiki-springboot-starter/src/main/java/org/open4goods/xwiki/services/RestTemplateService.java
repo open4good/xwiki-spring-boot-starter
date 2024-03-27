@@ -66,20 +66,7 @@ public class RestTemplateService {
 		return response;
 	}
 	
-	/**
-	 * Returns xwiki web server response from wikiPage
-	 * with an absolute or relative path
-	 * @param xwikiPath path to web page
-	 * @param withAbsolutePath true if 'xwikiPath' is absolute
-	 * @return
-	 */
-	public ResponseEntity<String> getWebPage( String xwikiPath, boolean withAbsolutePath ) {
-		String xwikiWebUrl = URLDecoder.decode(xwikiPath, Charset.defaultCharset());
-		if( ! withAbsolutePath ) {
-			xwikiWebUrl = resourcesPathManager.getViewpath() + xwikiWebUrl;
-		} 
-		return getWebResponse( xwikiWebUrl );
-	}
+
 	/**
 	 * 
 	 * @param viewUrl
@@ -104,8 +91,6 @@ public class RestTemplateService {
 		return response;
 	}
 	
-	
-
 	/**
 	 * 
 	 * @param url

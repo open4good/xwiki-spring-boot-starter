@@ -8,10 +8,11 @@
 <h1>Demo d'inclusion XWiki</h1>
 
 
-                       <th:block th:with="path='SPACE/PAGE/'">
-                        		<p class="lead" th:insert="inc/xwiki-bloc.html"></p>
-                        </th:block>
-                        
+<!--                        <th:block th:with="path='SPACE/PAGE/'"> -->
+<!--                         		<p class="lead" th:insert="inc/xwiki-bloc.html"></p> -->
+<!--                         </th:block> -->
+            
+            <div th:utext="${xwiki}"></div>
 </body>
 
 </html>

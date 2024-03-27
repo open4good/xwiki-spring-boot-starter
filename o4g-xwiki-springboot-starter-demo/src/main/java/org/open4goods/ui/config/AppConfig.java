@@ -2,7 +2,6 @@
 package org.open4goods.ui.config;
 
 import org.open4goods.xwiki.authentication.XwikiAuthenticationProvider;
-import org.open4goods.xwiki.services.XWikiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

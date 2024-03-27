@@ -297,6 +297,8 @@ public class MappingService {
 		return blob;
 	}
 	
+	
+	
 	/**
 	 * Retrieve available wikis
 	 * @param endpoint
@@ -539,17 +541,6 @@ public class MappingService {
 			logger.warn("Exception while retrieving 'href' from link {}. Error Message: {}",rel,  e.getMessage());
 		}
 		return href;
-	}
-
-
-	// TODO: DOUBLON avec la méthode du restTemplateService
-	public String updateUrlScheme(String url) {
-
-		String updated = url;
-		if(url != null && this.properties.isHttpsOnly()) {
-			updated = url.replaceFirst("http:", "https:");
-		}
-		return updated;
 	}
 	
 

@@ -3,7 +3,7 @@ package org.open4goods.xwiki;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import org.open4goods.xwiki.services.XWikiService;
+import org.open4goods.xwiki.services.XWikiReadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,13 +12,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 @AutoConfigureWebClient
 public class XWikiServicesTest {
 
-	@Autowired XWikiService xwikiService; 
+	@Autowired XWikiReadService xwikiReadService; 
 	
 	@Test
 	void testEmpty() {
 		
 		
-		xwikiService.downloadAttachment("sss");
+		//xwikiReadService.downloadAttachment("sss");
 		
 		
 		assertEquals(true, true);

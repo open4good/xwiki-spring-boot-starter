@@ -6,8 +6,8 @@ import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.open4goods.xwiki.services.MappingService;
 import org.open4goods.xwiki.services.RestTemplateService;
 import org.open4goods.xwiki.services.XWikiAuthenticationService;
+import org.open4goods.xwiki.services.XWikiHtmlService;
 import org.open4goods.xwiki.services.XWikiReadService;
-import org.open4goods.xwiki.services.XWikiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +69,7 @@ public class XWikiServiceConfiguration {
 				builder.basicAuthentication(xWikiProperties.getUsername(), xWikiProperties.getPassword()).
 				defaultHeader("accept", "text/html ").
 				build();
+		
 		logger.info("WebTemplate created with basic authentication and headers to request XWIKI WEB SERVER");
 		return webTemplate;
 	}
@@ -149,17 +150,41 @@ public class XWikiServiceConfiguration {
 	 */
 	@Bean( name = "xwikiReadService" )
 	XWikiReadService getXwikiReadService( 
-			@Qualifier("mappingService") MappingService mappingTemplate 
+			@Qualifier("mappingService") MappingService mappingService,
+			@Qualifier("restTemplateService") RestTemplateService restTemplateService
 			) {
 		
 		XWikiReadService XWikiReadService = null;
 		try {
-			XWikiReadService = new XWikiReadService(mappingTemplate, xWikiProperties);
+			XWikiReadService = new XWikiReadService(mappingService, restTemplateService, xWikiProperties);
 		} catch(Exception e) {
 			  logger.error("Unable to create XWikiService as bean. error message {}", e.getMessage());
 		}
 		return XWikiReadService;
 	}
+	
+
+	/**
+	 * rest READ Services 
+	 * 
+	 * @param mappingTemplate
+	 * @return
+	 */
+	@Bean( name = "xwikiHtmlService" )
+	XWikiHtmlService getXwikiHtmlService( 
+			@Qualifier("mappingService") MappingService mappingService,
+			@Qualifier("restTemplateService") RestTemplateService restTemplateService
+			) {
+		
+		XWikiHtmlService xwikiHtmlService = null;
+		try {
+			xwikiHtmlService = new XWikiHtmlService(mappingService, restTemplateService, xWikiProperties);
+		} catch(Exception e) {
+			  logger.error("Unable to create XWikiService as bean. error message {}", e.getMessage());
+		}
+		return xwikiHtmlService;
+	}
+	
 
 	/**
 	 * Services related to authentication
@@ -170,13 +195,13 @@ public class XWikiServiceConfiguration {
 	 */
 	@Bean( name = "xwikiAuthenticationService" )
 	XWikiAuthenticationService getXwikiAuthenticationService( 
-			@Qualifier("mappingService") MappingService mappingTemplate,
+			@Qualifier("mappingService") MappingService mappingService,
 			@Qualifier("restTemplateService") RestTemplateService restTemplateService
 			) {
 		
 		XWikiAuthenticationService xWikiAuthenticationService = null;
 		try {
-			xWikiAuthenticationService = new XWikiAuthenticationService(mappingTemplate, restTemplateService, xWikiProperties, localRestTemplateBuilder);
+			xWikiAuthenticationService = new XWikiAuthenticationService(mappingService, restTemplateService, xWikiProperties, localRestTemplateBuilder);
 		} catch(Exception e) {
 			  logger.error("Unable to create XWikiService as bean. error message {}", e.getMessage());
 		}
