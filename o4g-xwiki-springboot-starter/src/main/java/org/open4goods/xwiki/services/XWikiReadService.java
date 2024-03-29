@@ -1,8 +1,6 @@
 package org.open4goods.xwiki.services;
 
 
-import java.net.URLDecoder;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +11,8 @@ import org.open4goods.xwiki.config.XWikiConstantsResourcesPath;
 import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import org.xwiki.rest.model.jaxb.Attachment;
 import org.xwiki.rest.model.jaxb.Attachments;
 import org.xwiki.rest.model.jaxb.ObjectSummary;
@@ -138,6 +137,14 @@ public class XWikiReadService {
 				}
 			}
 		}
+		
+		
+		// NOTE(gof) : Could throw those kind of exceptions to the controller level ?
+		else {
+			  throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Foo Not Found");
+		}
+		
+		
 		return pagesList;
 	}
 	
