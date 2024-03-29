@@ -1,8 +1,9 @@
 package org.open4goods.xwiki.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.annotation.Validated;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Properties from configuration file
@@ -10,30 +11,30 @@ import org.springframework.context.annotation.Configuration;
  * @author Thierry.Ledan
  */
 
-@ConfigurationProperties
+@ConfigurationProperties(prefix = "xwiki")
+@Validated
 public class XWikiServiceProperties{
 	
-	@Value( "${xwiki.baseUrl}" )
+	@NotNull
 	public String baseUrl;
-	
-	@Value( "${xwiki.auth.username}" )
+
+	@NotNull
 	public String username;
 	
-	@Value( "${xwiki.auth.password}" )
+	@NotNull
 	public String password;
 	
-	// needed for test
-	@Value( "#{new Boolean('${xwiki.httpsOnly}')} " )
+	@NotNull
 	public boolean httpsOnly;
 	
-	@Value( "${xwiki.media}" )
-	public String media;	
+	@NotNull
+	public String media = "json";	
 	
-	@Value( "${xwiki.api.entryPoint}" )
-	public String apiEntrypoint;	
+	@NotNull
+	public String apiEntrypoint = "rest";	
 	
-	@Value( "${xwiki.api.wiki}" )
-	public String apiWiki;
+	@NotNull
+	public String apiWiki = "xwiki";
 
 	
 	public String getApiWiki() {
