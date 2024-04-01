@@ -4,16 +4,17 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-<parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.1.5</version>
-</parent>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.1.5</version>
+	</parent>
 
 	<groupId>org.open4goods</groupId>
 	<version>0.0.1-SNAPSHOT</version>
 	<artifactId>o4g-xwiki-springboot-starter</artifactId>
-	<name>o4g-xwiki-springboot-starter</name>
+	<name>o4g-xwiki-spring-boot-starter</name>
+	<url>https://github.com/open4good/o4g-xwiki-spring-boot-starter</url>
 
 	<description>A Xwiki Spring Starter, allowing authentication delegation and
 		content retrieval</description>
@@ -30,6 +31,16 @@
 		<url>https://github.com/open4good/o4g-xwiki-spring-boot-starter</url>
 	</scm>
 
+	<developers>
+		<developer>
+			<name>Thierry Ledan</name>
+		</developer>
+		<developer>
+			<name>Goulven Furet</name>
+		</developer>
+	</developers>
+
+
 	<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>
@@ -45,33 +56,63 @@
 
 	<build>
 		<plugins>
-
 			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.7</version>
-				<extensions>true</extensions>
+				<groupId>org.jreleaser</groupId>
+				<artifactId>jreleaser-maven-plugin</artifactId>
+				<version>1.3.1</version>
 				<configuration>
-					<serverId>ossrh</serverId>
-					<nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+					<jreleaser>
+						<signing>
+							<active>ALWAYS</active>
+							<armored>true</armored>
+						</signing>
+						<deploy>
+							<maven>
+								<nexus2>
+									<maven-central>
+										<active>ALWAYS</active>
+										<url>https://s01.oss.sonatype.org/service/local</url>
+										<closeRepository>false</closeRepository>
+										<releaseRepository>false</releaseRepository>
+										<stagingRepositories>target/staging-deploy</stagingRepositories>
+									</maven-central>
+								</nexus2>
+							</maven>
+						</deploy>
+					</jreleaser>
 				</configuration>
 			</plugin>
 
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<additionalOptions>
+						<additionalOption>-Xdoclint:none</additionalOption>
+					</additionalOptions>
+				</configuration>
 				<executions>
 					<execution>
-						<id>attach-sources</id>
+						<id>attach-javadoc</id>
 						<goals>
-							<goal>jar-no-fork</goal>
+							<goal>jar</goal>
 						</goals>
 					</execution>
 				</executions>
 			</plugin>
-			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-source</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -92,20 +133,20 @@
 	<dependencies>
 
 		<dependency>
-		    <groupId>org.jsoup</groupId>
-		    <artifactId>jsoup</artifactId>
-		    <version>1.17.2</version>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.17.2</version>
 		</dependency>
 
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.boot</groupId>-->
-<!--			<artifactId>spring-boot-docker-compose</artifactId>-->
-<!--		</dependency>-->
+		<!--		<dependency>-->
+		<!--			<groupId>org.springframework.boot</groupId>-->
+		<!--			<artifactId>spring-boot-docker-compose</artifactId>-->
+		<!--		</dependency>-->
 
 
 		<dependency>
-		    <groupId>org.springframework.security</groupId>
-		    <artifactId>spring-security-core</artifactId>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
 		</dependency>
 
 		<dependency>
@@ -146,10 +187,10 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
-    		<groupId>org.springframework.boot</groupId>
-    		<artifactId>spring-boot-starter-validation</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 
 
