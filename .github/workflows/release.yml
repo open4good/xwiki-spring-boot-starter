@@ -145,22 +145,22 @@ jobs:
       # Github pages deployment 
       ###########################################   
         
-      - name: Setup github Pages
-        uses: actions/configure-pages@v4    
+ #     - name: Setup github Pages
+ #       uses: actions/configure-pages@v4    
 
-      - name: Merge site
-        working-directory: ./o4g-xwiki-springboot-starter      
-        run: cp -r target/staging/* src/main/site/maven/
+#      - name: Merge site
+#        working-directory: ./o4g-xwiki-springboot-starter      
+#        run: cp -r target/staging/* src/main/site/maven/
                         
           
-      - name: Upload pen4goods custom site
-        uses: actions/upload-pages-artifact@v3
-        with:	
-          path: './src/main/site/'
+ #     - name: Upload pen4goods custom site
+ #       uses: actions/upload-pages-artifact@v3
+ #       with:	
+ #         path: './src/main/site/'
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+ #     - name: Deploy to GitHub Pages
+ #       id: deployment
+ #       uses: actions/deploy-pages@v4
         
       ############################################
       # Maven central jar publication 
