@@ -43,13 +43,8 @@ jobs:
       ###########################################   
                       
       - name: Build  Maven site
+        working-directory: ./o4g-xwiki-springboot-starter      
         run: mvn --batch-mode clean install
-
-      - name: Publish jar to maven cantral
-        run: mvn --batch-mode deploy
-        env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
                                               
      ############################################
       # Create the release with changelog,
@@ -154,6 +149,7 @@ jobs:
         uses: actions/configure-pages@v4    
 
       - name: Merge site
+        working-directory: ./o4g-xwiki-springboot-starter      
         run: cp -r target/staging/* src/main/site/maven/
                         
           
@@ -172,6 +168,7 @@ jobs:
         
         
       - name: Publish package
+        working-directory: ./o4g-xwiki-springboot-starter      
         env:
           JRELEASER_NEXUS2_USERNAME: ${{ secrets.JRELEASER_NEXUS2_USERNAME }}
           JRELEASER_NEXUS2_PASSWORD: ${{ secrets.JRELEASER_NEXUS2_PASSWORD }}
