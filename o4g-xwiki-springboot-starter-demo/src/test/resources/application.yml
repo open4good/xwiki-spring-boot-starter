@@ -45,8 +45,8 @@ spring:
     properties:
         mail.smtp.auth: true
         mail.smtp.starttls.enable: true        
-  resources:
-    addMappings: false
+#  resources:
+#    addMappings: false
   messages:
     basename: i18n/messages
   application:
@@ -55,8 +55,8 @@ spring:
       cache: false
   data:
     elasticsearch:
-      cluster-nodes: 127.0.0.1:9300
-      cluster-name: elastic
+#      cluster-nodes: 127.0.0.1:9300
+#      cluster-name: elastic
       repositories:
         enabled: true
 

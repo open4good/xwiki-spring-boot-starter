@@ -47,7 +47,7 @@
 			
 		<dependency>
 			<groupId>org.open4goods</groupId>
-			<artifactId>o4g-xwiki-spring-boot-starter</artifactId>
+			<artifactId>o4g-xwiki-springboot-starter</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
