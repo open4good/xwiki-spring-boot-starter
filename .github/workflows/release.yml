@@ -43,13 +43,8 @@ jobs:
       ###########################################   
                       
       - name: Build  Maven site
+        working-directory: ./o4g-xwiki-springboot-starter      
         run: mvn --batch-mode clean install
-
-      - name: Publish jar to maven cantral
-        run: mvn --batch-mode deploy
-        env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
                                               
      ############################################
       # Create the release with changelog,
@@ -150,27 +145,37 @@ jobs:
       # Github pages deployment 
       ###########################################   
         
-      - name: Setup github Pages
-        uses: actions/configure-pages@v4    
+ #     - name: Setup github Pages
+ #       uses: actions/configure-pages@v4    
 
-      - name: Merge site
-        run: cp -r target/staging/* src/main/site/maven/
+#      - name: Merge site
+#        working-directory: ./o4g-xwiki-springboot-starter      
+#        run: cp -r target/staging/* src/main/site/maven/
                         
           
-      - name: Upload pen4goods custom site
-        uses: actions/upload-pages-artifact@v3
-        with:	
-          path: './src/main/site/'
+ #     - name: Upload pen4goods custom site
+ #       uses: actions/upload-pages-artifact@v3
+ #       with:	
+ #         path: './src/main/site/'
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+ #     - name: Deploy to GitHub Pages
+ #       id: deployment
+ #       uses: actions/deploy-pages@v4
         
       ############################################
       # Maven central jar publication 
       ###########################################           
         
         
-        
+      - name: Publish package
+        working-directory: ./o4g-xwiki-springboot-starter      
+        env:
+          JRELEASER_NEXUS2_USERNAME: ${{ secrets.JRELEASER_NEXUS2_USERNAME }}
+          JRELEASER_NEXUS2_PASSWORD: ${{ secrets.JRELEASER_NEXUS2_PASSWORD }}
+          JRELEASER_GPG_PASSPHRASE: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
+          JRELEASER_GPG_SECRET_KEY: ${{ secrets.JRELEASER_GPG_SECRET_KEY }}
+          JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.JRELEASER_GPG_PUBLIC_KEY }}
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn deploy jreleaser:deploy -DaltDeploymentRepository=local::file:./target/staging-deploy        
         
         

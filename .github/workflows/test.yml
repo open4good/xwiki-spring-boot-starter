@@ -25,16 +25,20 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      ############################################
-      # Install Maven dependency submission
-      ###########################################      
-      - name: Maven Dependency Tree Dependency Submission
-        uses: advanced-security/maven-dependency-submission-action@v4.0.0
+
+
+# TODO : Put back, but bug with subfolders lprojetct layout
+#      ############################################
+#      # Install Maven dependency submission
+#      ###########################################      
+#      - name: Maven Dependency Tree Dependency Submission
+#        uses: advanced-security/maven-dependency-submission-action@v4.0.0
                   
       ############################################
       # Maven build and testing
       ###########################################    
                 
       - name: Build and test with Maven
+        working-directory: ./o4g-xwiki-springboot-starter      
         run: mvn --batch-mode --update-snapshots install
                 
