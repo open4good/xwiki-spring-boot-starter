@@ -8,9 +8,11 @@ import org.open4goods.xwiki.config.XWikiConstantsResourcesPath;
 import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
@@ -42,26 +44,24 @@ public class RestTemplateService {
 	 * @param endpoint
 	 * @return Response if status code equals to 2xxx, null otherwise
 	 */
-	public  ResponseEntity<String> getRestResponse( String endpoint ){
+	public  ResponseEntity<String> getRestResponse ( String endpoint ) throws RestClientResponseException {
 
 		ResponseEntity<String> response = null;
-		// first clean url: url decoding, check scheme and add query params if needed
-		String updatedEndpoint = cleanUrl(endpoint);
-		logger.info("request xwiki server with endpoint {}", updatedEndpoint);
-
-		if(updatedEndpoint != null) {
+		String updatedEndpoint = null;
+		
+		if(endpoint != null) {
 			try {
+				// first clean url: url decoding, check scheme and add query params if needed
+				updatedEndpoint = cleanUrl(endpoint);
+				logger.info("request xwiki server with endpoint {}", updatedEndpoint);
 				response = restTemplate.getForEntity(updatedEndpoint, String.class);
-			} catch(RestClientException rec) {
-				logger.warn("RestClientException exception  - uri:{} - error:{}", updatedEndpoint, rec.getMessage());
+			} catch(RestClientResponseException rcre) {
+				logger.warn("HttpClientErrorException exception  - uri:{} - error:{}", updatedEndpoint, rcre.getStackTrace());
+				throw new ResponseStatusException(rcre.getStatusCode(),rcre.getResponseBodyAsString());
 			} catch(Exception e) {
-				logger.warn("Exception while trying to reach endpoint:{} - error:{}", updatedEndpoint, e.getMessage());
+				logger.warn("Exception while trying to reach endpoint:{} - error:{}", updatedEndpoint, e.getStackTrace());
+				throw new ResponseStatusException(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build().getStatusCode(), e.getMessage());
 			}
-			// check response status code
-			if (null != response && ! response.getStatusCode().is2xxSuccessful()) {
-				logger.warn("Response returns with status code:{} - for uri:{}", response.getStatusCode(), updatedEndpoint);
-				response = null;
-			} 
 		}
 		return response;
 	}
