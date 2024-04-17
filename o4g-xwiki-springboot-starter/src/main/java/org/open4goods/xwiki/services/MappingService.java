@@ -3,16 +3,20 @@ package org.open4goods.xwiki.services;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.message.StringFormattedMessage;
 import org.open4goods.xwiki.config.XWikiConstantsRelations;
 import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.server.ResponseStatusException;
 import org.xwiki.rest.model.jaxb.Attachment;
 import org.xwiki.rest.model.jaxb.Attachments;
 import org.xwiki.rest.model.jaxb.Link;
@@ -56,10 +60,11 @@ public class MappingService {
 	
 	/**
 	 * Map 'Page' object from json response endpoint
-	 * @param String endpoint 
+	 * @param endpoint
 	 * @return a 'Page' object if response and mapping were successful, null otherwise
+	 * @throws ResponseStatusException
 	 */
-	public Page mapPage(String endpoint) {
+	public Page mapPage(String endpoint) throws ResponseStatusException {
 
 		Page page = null;
 		// get response from rest server
@@ -559,12 +564,10 @@ public class MappingService {
 					((UnrecognizedPropertyException)e).getReferringClass().toString(), 
 					((UnrecognizedPropertyException)e).getKnownPropertyIds().toString());
 		} else {
-			logger.warn("Unable to map '{}' object from json. Error Message:", 
-					typeToMap,
-					e.getMessage());
 			logger.warn("Unable to map '{}' object from json:{}", 
 					typeToMap,
 					responseBody);
 		}
+		throw new ResponseStatusException(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build().getStatusCode(), "Unable to map " + typeToMap + "' object from json response.");
 	}
 }

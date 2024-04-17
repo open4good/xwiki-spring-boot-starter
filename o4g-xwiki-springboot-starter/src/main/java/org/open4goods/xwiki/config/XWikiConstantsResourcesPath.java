@@ -145,9 +145,9 @@ public class XWikiConstantsResourcesPath {
 	 * @param space
 	 * @return
 	 */
-	public String getSpaceEndpoint( String space ) {
+	public String getSpacesEndpoint( String spacesPath ) {
 		return getSpacesEndpoint() +
-				space +
+				spacesPath +
 				URI_SEPARATOR;
 	}
 	
@@ -159,8 +159,8 @@ public class XWikiConstantsResourcesPath {
 	 * @param page
 	 * @return
 	 */
-	public String getPagesEndpoint( String space ) {
-		return getSpaceEndpoint(space) +
+	public String getPagesEndpoint( String spacesPath ) {
+		return getSpacesEndpoint(spacesPath) +
 				PAGES_PATH +
 				URI_SEPARATOR ;
 	}
@@ -172,8 +172,8 @@ public class XWikiConstantsResourcesPath {
 	 * @param page
 	 * @return
 	 */
-	public String getPageEndpoint( String space, String page ) {
-		return getPagesEndpoint(space) +
+	public String getPageEndpoint( String spacesPath, String page ) {
+		return getPagesEndpoint(spacesPath) +
 				page +
 				URI_SEPARATOR;
 	}

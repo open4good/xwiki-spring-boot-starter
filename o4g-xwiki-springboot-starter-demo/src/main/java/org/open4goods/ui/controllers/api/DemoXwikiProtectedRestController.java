@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.xwiki.rest.model.jaxb.Page;
@@ -53,25 +54,37 @@ public class DemoXwikiProtectedRestController {
 	}
 	
 	// http://localhost:8080/page?space=Blog&page=BlogIntroduction
+//	@Operation( summary = "Operation to fetch a xwiki Page", 
+//			description = "Fetch a xwiki Page belonging to a space" 
+//					+ "<br>TODO: Gestion des codes de retour http")
+//	@GetMapping( value = "/page", produces = "application/json" )
+//	public Page getPage( @RequestParam String space, @RequestParam String page ) {
+//		Page wikiPage = xwikiReadService.getPage(space, page);
+//		return wikiPage;
+//	}
+	
+	// http://localhost:8080/page/spaces/BROUILLONS.testbrouillon/pageName/WebHome
 	@Operation( summary = "Operation to fetch a xwiki Page", 
-			description = "Fetch a xwiki Page belonging to a space" 
-					+ "<br>TODO: Gestion des codes de retour http")
-	@GetMapping( value = "/page", produces = "application/json" )
-	public Page getPage( @RequestParam String space, @RequestParam String page ) {
-		Page wikiPage = xwikiReadService.getPage(space, page);
+			description = "Fetch a xwiki Page belonging to a Space"
+					+ "<br>Separate main space and nested spaces with '.'")
+					
+	@GetMapping( "page/spaces/{spaces:.+}/pageName/{pageName}" )
+	public Page getPage( @PathVariable("spaces") String spaces, @PathVariable("pageName")  String pageName ) {
+		Page wikiPage = xwikiReadService.getPage(spaces, pageName);
 		return wikiPage;
 	}
-	
-	
+
 	// http://localhost:8080/pages?space=Blog
 	@Operation( summary = "Operation to fetch a set of PageSummary", 
-			description = "Fetch all Page Summary belonging to a space" 
-					+ "<br>TODO: Gestion des codes de retour http")
-	@GetMapping( value ="/pages", produces = "application/json" )
-	public Pages getPages( @RequestParam String space ) {
-		Pages page = xwikiReadService.getPages(space);
+			description = "Fetch all Page Summary belonging to a space"
+					+ "<br>Separate main space and nested spaces with '.'")
+	
+	@GetMapping( "/pages/spaces/{spaces:.+}" )
+	public Pages getPages( @PathVariable("spaces") String spaces ) {
+		Pages page = xwikiReadService.getPages(spaces);
 		return page;
 	}
+	
 	
 	// http://localhost:8080/props?space=Blog&page=BlogIntroduction
 	@Operation( summary = "Operation to fetch Page's properties",

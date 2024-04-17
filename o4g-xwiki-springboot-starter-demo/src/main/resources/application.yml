@@ -5,6 +5,11 @@ xwiki:
   username: Tif
   httpsOnly: true
   
+
+# manage stack trace in response error
+server:
+  error:
+    include-stacktrace: never
   
   #media: json  
   #entryPoint: rest

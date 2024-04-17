@@ -64,10 +64,13 @@ public class XWikiReadService {
 	 * @param space
 	 * @param name
 	 * @return
+	 * 
 	 */
-	public Page getPage(String space, String name) {
+	public Page getPage(String spaces, String pageName) throws ResponseStatusException {
 		Page page = null;
-		String endpoint = resourcesPathManager.getPageEndpoint(space, name);	
+		// replace '.' with '/spaces/' to get all nested spaces if needed
+		String spacesPath = spaces.replace(".", "/spaces/");
+		String endpoint = resourcesPathManager.getPageEndpoint(spacesPath, pageName);	
 		page = this.mappingService.mapPage(endpoint);
 		return page;
 	}
@@ -77,9 +80,11 @@ public class XWikiReadService {
 	 * @param space
 	 * @return
 	 */
-	public Pages getPages(String space) {
-		String uri = resourcesPathManager.getPagesEndpoint(space);
-		return this.mappingService.mapPages(uri);
+	public Pages getPages(String spaces) {
+		// replace '.' with '/spaces/' to get all nested spaces if needed
+		String spacesPath = spaces.replace(".", "/spaces/");
+		String endpoint = resourcesPathManager.getPagesEndpoint(spacesPath);
+		return this.mappingService.mapPages(endpoint);
 	}
 		
 	/**

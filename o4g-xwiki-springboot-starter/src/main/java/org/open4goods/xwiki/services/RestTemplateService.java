@@ -44,7 +44,7 @@ public class RestTemplateService {
 	 * @param endpoint
 	 * @return Response if status code equals to 2xxx, null otherwise
 	 */
-	public  ResponseEntity<String> getRestResponse ( String endpoint ) throws RestClientResponseException {
+	public  ResponseEntity<String> getRestResponse ( String endpoint ) throws ResponseStatusException {
 
 		ResponseEntity<String> response = null;
 		String updatedEndpoint = null;
