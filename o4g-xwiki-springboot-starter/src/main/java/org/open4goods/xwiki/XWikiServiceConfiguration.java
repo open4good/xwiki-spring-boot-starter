@@ -7,6 +7,7 @@ import org.open4goods.xwiki.services.MappingService;
 import org.open4goods.xwiki.services.RestTemplateService;
 import org.open4goods.xwiki.services.XWikiAuthenticationService;
 import org.open4goods.xwiki.services.XWikiHtmlService;
+import org.open4goods.xwiki.services.XWikiObjectService;
 import org.open4goods.xwiki.services.XWikiReadService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,10 +42,10 @@ public class XWikiServiceConfiguration {
 		this.xWikiProperties = xWikiProps;
 	}
 
-
 	
 	/**
 	 * restTemplate dedicated to restful api request
+	 * 
 	 * @param builder
 	 * @return
 	 */
@@ -74,27 +75,6 @@ public class XWikiServiceConfiguration {
 		return webTemplate;
 	}
 	
-	/**
-	 * 
-	 * @param restTemplate
-	 * @param webTemplate
-	 * @param xWikiProperties
-	 * @return
-	 */
-//	@Bean( name = "xwikiRestService" )
-//	XWikiService getXwikiRestService( 
-//			@Qualifier("restTemplate") RestTemplate restTemplate, 
-//			@Qualifier("webTemplate") RestTemplate webTemplate
-//			) {
-//		
-//		XWikiService xwikiService = null;
-//		try {
-//			xwikiService = new XWikiService(restTemplate, webTemplate, xWikiProperties, localRestTemplateBuilder);
-//		} catch(Exception e) {
-//			  logger.error("Unable to create XWikiService as bean. error message {}", e.getMessage());
-//		}
-//		return xwikiService;
-//	}
 	
 	/**
 	 * restTemplate services
@@ -117,7 +97,7 @@ public class XWikiServiceConfiguration {
 		try {
 			restTemplateService = new RestTemplateService(restTemplate, webTemplate, xWikiProperties);
 		} catch(Exception e) {
-			  logger.error("Unable to create XWikiService as bean. error message {}", e.getMessage());
+			  logger.error("Unable to create RestTemplateService as bean. error message {}", e.getMessage());
 		}
 		return restTemplateService;
 	}
@@ -137,7 +117,7 @@ public class XWikiServiceConfiguration {
 		try {
 			mappingService = new MappingService(restTemplateService, xWikiProperties);
 		} catch(Exception e) {
-			  logger.error("Unable to create XWikiService as bean. error message {}", e.getMessage());
+			  logger.error("Unable to create MappingService as bean. error message {}", e.getMessage());
 		}
 		return mappingService;
 	}	
@@ -149,29 +129,27 @@ public class XWikiServiceConfiguration {
 	 * @return
 	 */
 	@Bean( name = "xwikiReadService" )
-	XWikiReadService getXwikiReadService( 
-			@Qualifier("mappingService") MappingService mappingService,
-			@Qualifier("restTemplateService") RestTemplateService restTemplateService
-			) {
+	XWikiReadService getXwikiReadService( @Qualifier("mappingService") MappingService mappingService ) {
 		
 		XWikiReadService XWikiReadService = null;
 		try {
-			XWikiReadService = new XWikiReadService(mappingService, restTemplateService, xWikiProperties);
+			XWikiReadService = new XWikiReadService(mappingService, xWikiProperties);
 		} catch(Exception e) {
-			  logger.error("Unable to create XWikiService as bean. error message {}", e.getMessage());
+			  logger.error("Unable to create XWikiReadService as bean. error message {}", e.getMessage());
 		}
 		return XWikiReadService;
 	}
 	
 
 	/**
-	 * rest READ Services 
+	 * HTML Services 
 	 * 
 	 * @param mappingTemplate
 	 * @return
 	 */
 	@Bean( name = "xwikiHtmlService" )
 	XWikiHtmlService getXwikiHtmlService( 
+			// TODO:check what is really needed !!
 			@Qualifier("mappingService") MappingService mappingService,
 			@Qualifier("restTemplateService") RestTemplateService restTemplateService
 			) {
@@ -180,9 +158,27 @@ public class XWikiServiceConfiguration {
 		try {
 			xwikiHtmlService = new XWikiHtmlService(mappingService, restTemplateService, xWikiProperties);
 		} catch(Exception e) {
-			  logger.error("Unable to create XWikiService as bean. error message {}", e.getMessage());
+			  logger.error("Unable to create XWikiHtmlService as bean. error message {}", e.getMessage());
 		}
 		return xwikiHtmlService;
+	}
+	
+	/**
+	 * HTML Services 
+	 * 
+	 * @param mappingTemplate
+	 * @return
+	 */
+	@Bean( name = "xwikiObjectService" )
+	XWikiObjectService getXwikiObjectService( @Qualifier("mappingService") MappingService mappingService ) {
+		
+		XWikiObjectService xwikiObjectService = null;
+		try {
+			xwikiObjectService = new XWikiObjectService(mappingService, xWikiProperties);
+		} catch(Exception e) {
+			  logger.error("Unable to create XWikiService as bean. error message {}", e.getMessage());
+		}
+		return xwikiObjectService;
 	}
 	
 
@@ -203,7 +199,7 @@ public class XWikiServiceConfiguration {
 		try {
 			xWikiAuthenticationService = new XWikiAuthenticationService(mappingService, restTemplateService, xWikiProperties, localRestTemplateBuilder);
 		} catch(Exception e) {
-			  logger.error("Unable to create XWikiService as bean. error message {}", e.getMessage());
+			  logger.error("Unable to create XWikiAuthenticationService as bean. error message {}", e.getMessage());
 		}
 		return xWikiAuthenticationService;
 	}

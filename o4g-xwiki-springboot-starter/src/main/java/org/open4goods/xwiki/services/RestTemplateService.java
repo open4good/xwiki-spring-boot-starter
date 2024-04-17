@@ -1,9 +1,6 @@
 package org.open4goods.xwiki.services;
 
-import java.net.URI;
-import java.net.URLDecoder;
-import java.nio.charset.Charset;
-
+import org.open4goods.xwiki.config.UrlManagementHelper;
 import org.open4goods.xwiki.config.XWikiConstantsResourcesPath;
 import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.slf4j.Logger;
@@ -13,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Http services to request the XWiki server
@@ -26,16 +22,18 @@ public class RestTemplateService {
 
 	private RestTemplate restTemplate;
 	private RestTemplate webTemplate;
-	private XWikiServiceProperties properties;
+	//private XWikiServiceProperties properties;
 	private XWikiConstantsResourcesPath resourcesPathManager;
+	private UrlManagementHelper urlHelper;;
 	
 	private static Logger logger = LoggerFactory.getLogger(RestTemplateService.class);
 	
 	public RestTemplateService(RestTemplate restTemplate, RestTemplate webTemplate, XWikiServiceProperties properties) {
 		this.restTemplate = restTemplate;
 		this.webTemplate = webTemplate;
-		this.properties = properties;
-		this.resourcesPathManager = new XWikiConstantsResourcesPath(this.properties.getBaseUrl(), this.properties.getApiEntrypoint(), this.properties.getApiWiki());
+		//this.properties = properties;
+		this.urlHelper = new UrlManagementHelper(properties);
+		//this.resourcesPathManager = new XWikiConstantsResourcesPath(this.properties.getBaseUrl(), this.properties.getApiEntrypoint(), this.properties.getApiWiki());
 	}
 	
 	/**
@@ -52,7 +50,7 @@ public class RestTemplateService {
 		if(endpoint != null) {
 			try {
 				// first clean url: url decoding, check scheme and add query params if needed
-				updatedEndpoint = cleanUrl(endpoint);
+				updatedEndpoint = urlHelper.cleanUrl(endpoint);
 				logger.info("request xwiki server with endpoint {}", updatedEndpoint);
 				response = restTemplate.getForEntity(updatedEndpoint, String.class);
 			} catch(RestClientResponseException rcre) {
@@ -117,72 +115,72 @@ public class RestTemplateService {
 	}
 	
 	
-	/**
-	 * Clean url: 
-	 * 				URLDecoding  
-	 * 				Force https if httpsOnly set
-	 * 				Add 'media' query param from properties
-	 * @param url
-	 * @param key
-	 * @param value
-	 * @return this url with query param key=value if process succedded, null otherwise
-	 */
-	public String cleanUrl(String url) {
+//	/**
+//	 * Clean url: 
+//	 * 				URLDecoding  
+//	 * 				Force https if httpsOnly set
+//	 * 				Add 'media' query param from properties
+//	 * @param url
+//	 * @param key
+//	 * @param value
+//	 * @return this url with query param key=value if process succedded, null otherwise
+//	 */
+//	public String cleanUrl(String url) {
+//
+//		String clean = "";
+//		try {
+//			if( url != null ) {
+//				String secureUrl = updateUrlScheme(url);
+//				String decoded = URLDecoder.decode(secureUrl, Charset.defaultCharset());
+//				// add request param if needed
+//				clean = addQueryParam(decoded, "media", this.properties.getMedia());
+//			}
+//		} catch (Exception e) {
+//			logger.warn("Exception while updating url {}. Error Message: {}",url,  e.getMessage());
+//		}
+//		return clean;
+//	}
 
-		String clean = "";
-		try {
-			if( url != null ) {
-				String secureUrl = updateUrlScheme(url);
-				String decoded = URLDecoder.decode(secureUrl, Charset.defaultCharset());
-				// add request param if needed
-				clean = addQueryParam(decoded, "media", this.properties.getMedia());
-			}
-		} catch (Exception e) {
-			logger.warn("Exception while updating url {}. Error Message: {}",url,  e.getMessage());
-		}
-		return clean;
-	}
 
+//	/**
+//	 * Update http scheme in https if needed
+//	 * @param url
+//	 * @return
+//	 */
+//	public String updateUrlScheme(String url) {
+//
+//		String updated = url;
+//		if(url != null && this.properties.isHttpsOnly()) {
+//			updated = url.replaceFirst("http:", "https:");
+//		}
+//		return updated;
+//	}
 
-	/**
-	 * Update http scheme in https if needed
-	 * @param url
-	 * @return
-	 */
-	public String updateUrlScheme(String url) {
-
-		String updated = url;
-		if(url != null && this.properties.isHttpsOnly()) {
-			updated = url.replaceFirst("http:", "https:");
-		}
-		return updated;
-	}
-
-	/**
-	 * Add query params to url
-	 * @param url
-	 * @param key
-	 * @param value
-	 * @return this url with query param key=value if process succedded, null otherwise
-	 */
-	public String addQueryParam(String url, String key, String value) {
-
-		String uriWithParams = null;
-		try{
-			URI uri = UriComponentsBuilder.fromUriString(url)
-					.queryParam(key, value)
-					.build()
-					.toUri();
-
-			if(uri != null) {
-				// decode again after adding query params
-				uriWithParams = URLDecoder.decode(uri.toString(), Charset.defaultCharset());
-			}
-
-		} catch(Exception e) {
-			logger.warn("Unable to add query params {}={} to uri {}. Error Message:{}",key, value, url, e.getMessage());
-		}       
-		return uriWithParams;
-
-	}
+//	/**
+//	 * Add query params to url
+//	 * @param url
+//	 * @param key
+//	 * @param value
+//	 * @return this url with query param key=value if process succedded, null otherwise
+//	 */
+//	public String addQueryParam(String url, String key, String value) {
+//
+//		String uriWithParams = null;
+//		try{
+//			URI uri = UriComponentsBuilder.fromUriString(url)
+//					.queryParam(key, value)
+//					.build()
+//					.toUri();
+//
+//			if(uri != null) {
+//				// decode again after adding query params
+//				uriWithParams = URLDecoder.decode(uri.toString(), Charset.defaultCharset());
+//			}
+//
+//		} catch(Exception e) {
+//			logger.warn("Unable to add query params {}={} to uri {}. Error Message:{}",key, value, url, e.getMessage());
+//		}       
+//		return uriWithParams;
+//
+//	}
 }

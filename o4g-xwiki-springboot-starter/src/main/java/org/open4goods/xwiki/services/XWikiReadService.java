@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.open4goods.xwiki.config.UrlManagementHelper;
 import org.open4goods.xwiki.config.XWikiConstantsRelations;
 import org.open4goods.xwiki.config.XWikiConstantsResourcesPath;
 import org.open4goods.xwiki.config.XWikiServiceProperties;
@@ -37,16 +38,16 @@ public class XWikiReadService {
 	private XWikiServiceProperties xWikiProperties;
 	private XWikiConstantsResourcesPath resourcesPathManager;
 	private MappingService mappingService;
-	private RestTemplateService restTemplateService;
+	private UrlManagementHelper urlHelper;
 	
-	public XWikiReadService (MappingService mappingService, RestTemplateService restTemplateService, XWikiServiceProperties xWikiProperties) throws Exception {
+	public XWikiReadService (MappingService mappingService, XWikiServiceProperties xWikiProperties) throws Exception {
 		
 		this.xWikiProperties = xWikiProperties;
 		this.mappingService = mappingService;
-		this.restTemplateService = restTemplateService;
-		
 		this.resourcesPathManager = new XWikiConstantsResourcesPath(xWikiProperties.getBaseUrl(), xWikiProperties.getApiEntrypoint(), xWikiProperties.getApiWiki());
-
+		this.urlHelper = new UrlManagementHelper(xWikiProperties);
+		
+		
 		//		TODO: check that wiki exists !!
 		
 //		// get all available wikis and check that the targeted one exists
@@ -60,46 +61,51 @@ public class XWikiReadService {
 //	}
 	
 	/**
+	 * Request the xwiki rest api to GET a xwiki Page resource from space path and page name.
+	 * Then create a XWiki Page Object from the rest response.
 	 * 
-	 * @param space
-	 * @param name
-	 * @return
+	 * @param spacePath path to the Page resource
+	 * @param pageName name of the page resource
+	 * @return the Page object from GET request 
 	 * 
 	 */
-	public Page getPage(String spaces, String pageName) throws ResponseStatusException {
-		Page page = null;
+	public Page getPage(String spacePath, String pageName) throws ResponseStatusException {
 		// replace '.' with '/spaces/' to get all nested spaces if needed
-		String spacesPath = spaces.replace(".", "/spaces/");
-		String endpoint = resourcesPathManager.getPageEndpoint(spacesPath, pageName);	
-		page = this.mappingService.mapPage(endpoint);
-		return page;
+		String pathTopage = spacePath.replace(".", "/spaces/");
+		String endpoint = resourcesPathManager.getPageEndpoint(pathTopage, pageName);	
+		return this.mappingService.mapPage(endpoint);
 	}
 
 	/**
+	 * Request the xwiki rest api to GET all xwiki Page summaries resources from space path.
+	 * Then create a XWiki Pages Object from the rest response.
+	 * A Pages object contains a set of Page summaries.
 	 * 
-	 * @param space
-	 * @return
+	 * @param spacePath targeted path
+	 * @return the Pages object from GET request 
+	 * 
 	 */
-	public Pages getPages(String spaces) {
+	public Pages getPages(String spacePath) throws ResponseStatusException {
 		// replace '.' with '/spaces/' to get all nested spaces if needed
-		String spacesPath = spaces.replace(".", "/spaces/");
-		String endpoint = resourcesPathManager.getPagesEndpoint(spacesPath);
+		String pathToPages = spacePath.replace(".", "/spaces/");
+		String endpoint = resourcesPathManager.getPagesEndpoint(pathToPages);
 		return this.mappingService.mapPages(endpoint);
 	}
 		
 	/**
 	 * Retrieve all 'Page' associated to a space
 	 * with properties and attachments (disabled as default)
-	 * @param space
+	 * 
+	 * @param spacePath
 	 * @return A List of 'Page' object, could be empty, never null
 	 */
-	public List<Page> getPagesList(String space) {
+	public List<Page> getPagesList(String spacePath) throws ResponseStatusException {
 		
 		Pages pages = null;
 		List<Page> pagesList = new ArrayList<Page>();
-		String endpoint = resourcesPathManager.getPagesEndpoint(space);
-		
-		pages = this.mappingService.mapPages(endpoint);
+		// replace '.' with '/spaces/' to get all nested spaces if needed
+		String pathTopage = spacePath.replace(".", "/spaces/");
+		pages = this.mappingService.mapPages(resourcesPathManager.getPagesEndpoint(pathTopage));
 		
 		// Loop on PageSummary list in order to create Page list
 		if( pages != null && !pages.getPageSummaries().isEmpty() ) {
@@ -108,48 +114,65 @@ public class XWikiReadService {
 			
 			for(PageSummary p: pages.getPageSummaries()) {
 				
-				String pageUrl = null;
-				
 				// get page endpoint
-				pageUrl =  this.mappingService.getHref(XWikiConstantsRelations.REL_PAGE, p.getLinks());
-				
-				// add request param to return fields that are disabled by default
-				// TODO: mapping issue: field 'properties' does not exists in the object 'ObjectSummary'
+				// TODO: add request param to url in order to get fields that are disabled by default
+				String pageEndpoint =  urlHelper.getHref(XWikiConstantsRelations.REL_PAGE, p.getLinks());
+				tempPage = this.mappingService.mapPage(pageEndpoint);
+
 				if( tempPage != null ) {
 					pagesList.add(tempPage);
-
+					
+					//--------------------------
 					// fetch attachments
-					Attachments attachments = this.mappingService.getAttachments(tempPage);
-					if( attachments != null && attachments.getAttachments() != null && attachments.getAttachments().size()  > 0 ) {
-						// update url (scheme, query params..) according to starter properties
-						for(Attachment attachment: attachments.getAttachments()) {
-							
-							// TODO: updateUrlScheme a déplacer ou déclarer ailleurs que dans restTemplateService
-							attachment.setXwikiAbsoluteUrl(this.restTemplateService.updateUrlScheme(attachment.getXwikiAbsoluteUrl()));
-							attachment.setXwikiRelativeUrl(this.restTemplateService.updateUrlScheme(attachment.getXwikiRelativeUrl()));
+					//-------------------------
+					try {
+						Attachments attachments = this.mappingService.getAttachments(tempPage);
+						if( attachments != null && attachments.getAttachments() != null && attachments.getAttachments().size()  > 0 ) {
+							// update url (scheme, query params..) according to application properties
+							for(Attachment attachment: attachments.getAttachments()) {
+								attachment.setXwikiAbsoluteUrl(this.urlHelper.updateUrlScheme(attachment.getXwikiAbsoluteUrl()));
+								attachment.setXwikiRelativeUrl(this.urlHelper.updateUrlScheme(attachment.getXwikiRelativeUrl()));
+							}
+							tempPage.setAttachments(attachments);
 						}
-						tempPage.setAttachments(attachments);
-					}	
-					
-					// fetch objects (properties, ...)
-					Objects objects = this.mappingService.getPageObjects(tempPage);
-					if( objects != null ) {
-						tempPage.setObjects(objects);
+					} catch( Exception e ) {
+						// do not stop process, just log error and return page without attachments
+						LOGGER.warn("Exception raised while getting attachments from Page {}", pageEndpoint );
 					}
-					
-					// fetch classes
-					
+
+					//------------------------------------
+					// fetch properties
+					//------------------------------------
+					try {
+					} catch( Exception e ) {
+						// do not stop process, just log error and return page without properties
+					}
+						
+					//------------------------------------
+					// fetch objects
+					//------------------------------------
+					try {
+						Objects objects = this.mappingService.getPageObjects(tempPage);
+						if( objects != null ) {
+							tempPage.setObjects(objects);
+						}
+					} catch( Exception e ) {
+						// do not stop process, just log error and return page without properties
+						LOGGER.warn("Exception raised while getting properties from Page {}", pageEndpoint);
+					}
+
+					//------------------------------------
+					// TODO: fetch classes
+					//------------------------------------
+					try {
+					} catch( Exception e ) {
+						// do not stop process, just log error and return page without attachments
+					}
 				}
 			}
-		}
-		
-		
-		// NOTE(gof) : Could throw those kind of exceptions to the controller level ?
-		else {
-			  throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Foo Not Found");
-		}
-		
-		
+		} else {
+			  throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Page in space '" + pathTopage + "'");
+		}	
 		return pagesList;
 	}
 	
@@ -161,9 +184,11 @@ public class XWikiReadService {
 	 * @param pageName name of 'page'
 	 * @return
 	 */
-	public Map<String,String> getProperties(String spaceName, String pageName) {
+	public Map<String,String> getProperties(String spaces, String pageName) throws ResponseStatusException {
 		Map<String,String> props = new HashMap<String, String>();
-		String endpoint = resourcesPathManager.getPageEndpoint(spaceName, pageName);
+		// replace '.' with '/spaces/' to get all nested spaces if needed
+		String spacesPath = spaces.replace(".", "/spaces/");
+		String endpoint = resourcesPathManager.getPageEndpoint(spacesPath, pageName);
 		Page page = this.mappingService.mapPage(endpoint);
 		if(page != null) {
 			props = this.mappingService.getProperties(page);
@@ -171,21 +196,7 @@ public class XWikiReadService {
 		return props;
 	}
 	
-	/**
-	 * Get properties from Page 'page'
-	 * 
-	 * @param page
-	 * @return 
-	 */
-	public Map<String,String> getProperties(Page page) {
-		Map<String,String> props = new HashMap<String, String>();
-		if(page != null) {
-			props = this.mappingService.getProperties(page);
-		}
-		return props;
-	}
-	
-	
+
 	//////////////////////////////
 	//							// 									
 	//  USERS - GROUPS - ROLES	//
@@ -261,10 +272,10 @@ public class XWikiReadService {
 		Map<String,String> properties = new HashMap<String, String>();
 		if( user != null ) {
 			// first get objects from Page
-			String propertiesUri = this.mappingService.getHref(XWikiConstantsRelations.REL_OBJECT, user.getLinks());
+			String propertiesUri = urlHelper.getHref(XWikiConstantsRelations.REL_OBJECT, user.getLinks());
 			Objects objects = this.mappingService.getObjects(propertiesUri);
 			// then get properties from objects (look for an object from class "XWikiUsers")
-			properties =  this.mappingService.getProperties(objects, resourcesPathManager.getUsersClassName());
+			properties =  this.mappingService.getUserProperties(objects, resourcesPathManager.getUsersClassName());
 		}
 		return properties;
 	}

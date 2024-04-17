@@ -1,15 +1,11 @@
 package org.open4goods.xwiki.services;
 
-import java.net.URI;
-import java.net.URLDecoder;
-import java.nio.charset.Charset;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.message.StringFormattedMessage;
+import org.open4goods.xwiki.config.UrlManagementHelper;
 import org.open4goods.xwiki.config.XWikiConstantsRelations;
 import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.slf4j.Logger;
@@ -19,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 import org.xwiki.rest.model.jaxb.Attachment;
 import org.xwiki.rest.model.jaxb.Attachments;
-import org.xwiki.rest.model.jaxb.Link;
 import org.xwiki.rest.model.jaxb.ObjectSummary;
 import org.xwiki.rest.model.jaxb.Objects;
 import org.xwiki.rest.model.jaxb.Page;
@@ -50,12 +45,12 @@ public class MappingService {
 
 	RestTemplateService restTemplateService;
 	XWikiServiceProperties properties;
-	
+	private UrlManagementHelper urlHelper;
 	
 	public MappingService(RestTemplateService restTemplateService, XWikiServiceProperties properties){
 		this.restTemplateService = restTemplateService;
 		this.properties = properties;
-		//this.resourcesPathManager = new XWikiConstantsResourcesPath(xWikiProperties.getBaseUrl(), xWikiProperties.getApiEntrypoint(), xWikiProperties.getApiWiki());
+		this.urlHelper = new UrlManagementHelper(properties);
 	}
 	
 	/**
@@ -110,6 +105,10 @@ public class MappingService {
 	
 	/**
 	 * Get properties related to 'page'
+	 * To find out the good url to properties, it's a tricky method:
+	 * First get the 'Objects' from 'Page' that contains a list of 'ObjectSummary'.
+	 * Pick up the first one (!!!!) and get the href link from the 'properties' rel link
+	 * 
 	 * @param page
 	 * @return page's properties
 	 */
@@ -124,7 +123,7 @@ public class MappingService {
 		} 
 		if( objects != null ) {
 			// TODO: hard coding - objects.getObjectSummaries().get(0).getLinks() NOT GOOD , try to find the good summary !!
-			String pagePropsEndpoint = getHref(XWikiConstantsRelations.REL_PROPERTIES, objects.getObjectSummaries().get(0).getLinks());
+			String pagePropsEndpoint = urlHelper.getHref(XWikiConstantsRelations.REL_PROPERTIES, objects.getObjectSummaries().get(0).getLinks());
 
 			ResponseEntity<String> response = restTemplateService.getRestResponse(pagePropsEndpoint);
 			if( response != null ) {
@@ -147,7 +146,7 @@ public class MappingService {
 	 * @param page
 	 * @return page's properties
 	 */
-	public Map<String, String> getProperties(Objects objects, String className){
+	public Map<String, String> getUserProperties(Objects objects, String className){
 
 		Map<String, String> properties = new HashMap<String, String>();
 		Properties propertiesObject = new Properties();
@@ -156,12 +155,12 @@ public class MappingService {
 		if( objects != null && objects.getObjectSummaries() != null && ! objects.getObjectSummaries().isEmpty() ) {
 			for( ObjectSummary object: objects.getObjectSummaries() ) {
 				if( object.getClass().equals(className) ) {
-					propertiesEndpoint = getHref(XWikiConstantsRelations.REL_PROPERTY, object.getLinks());
+					propertiesEndpoint = urlHelper.getHref(XWikiConstantsRelations.REL_PROPERTY, object.getLinks());
 					break;
 				}
 			}
 		}
-		// and finally fetch properties
+		// fetch properties
 		if( StringUtils.isNotBlank(propertiesEndpoint) ) {
 			ResponseEntity<String> response = restTemplateService.getRestResponse(propertiesEndpoint);
 			if( response != null ) {
@@ -184,7 +183,7 @@ public class MappingService {
 	 */
 	public Objects getPageObjects(Page page) {
 
-		String objectsUrl = getHref(XWikiConstantsRelations.REL_OBJECTS, page.getLinks());
+		String objectsUrl = urlHelper.getHref(XWikiConstantsRelations.REL_OBJECTS, page.getLinks());
 		return getObjects(objectsUrl);
 	}
 	
@@ -200,15 +199,7 @@ public class MappingService {
 		if( StringUtils.isNotEmpty(pageEndpoint) ) {
 			ResponseEntity<String> response = restTemplateService.getRestResponse(pageEndpoint);
 			if( response != null ) {
-				try {
-					ObjectMapper mapper = new ObjectMapper();
-					objects = mapper.readValue(response.getBody(),new TypeReference<Objects>(){});
-					logger.debug("Object 'Objects' mapped correctly}");
-				}
-				catch(Exception e) {
-					logger.warn("Unable to map 'Objects' object from json. Error Message:'", e.getMessage());
-					logger.warn("Unable to map 'Objects' object from json:{}", response.getBody());
-				}
+				objects = deserializeObjects(response);
 			}
 		}
 		return objects;
@@ -216,27 +207,21 @@ public class MappingService {
 	
 	
 	/**
+	 * Get page attachments
 	 * 
-	 * @param page
-	 * @return
+	 * @param page targeted Page
+	 * @return Attachments object
 	 */
 	public Attachments getAttachments (Page page) {
 
 		Attachments attachments = null;
-		// get the url
-		String attachementsUrl = getHref(XWikiConstantsRelations.REL_ATTACHMENTS, page.getLinks());
+		// get the attachments url in 'links' set
+		String attachementsUrl = urlHelper.getHref(XWikiConstantsRelations.REL_ATTACHMENTS, page.getLinks());
 		if( StringUtils.isNotBlank(attachementsUrl) ) {
 			ResponseEntity<String> response = null;
 			response = restTemplateService.getRestResponse(attachementsUrl);
 			if( response != null ) {
-				try {
-					ObjectMapper mapper = new ObjectMapper();
-					attachments = mapper.readValue(response.getBody(),new TypeReference<Attachments>(){});
-				}
-				catch(Exception e) {
-					logger.warn("Unable to map 'Attachments' object from json. Error Message:'", e.getMessage());
-					logger.warn("Unable to map 'Attachments' object from json:{}", response.getBody());
-				}
+				attachments = deserializeAttachments(response);
 			}
 		}
 		return attachments;
@@ -253,22 +238,14 @@ public class MappingService {
 		Attachments attachments;
 		List<Attachment> attachmentsList = new ArrayList<Attachment>();
 		// get the url
-		String attachementsUrl = getHref(XWikiConstantsRelations.REL_ATTACHMENTS, page.getLinks());
+		String attachementsUrl = urlHelper.getHref(XWikiConstantsRelations.REL_ATTACHMENTS, page.getLinks());
 		if( StringUtils.isNotBlank(attachementsUrl) ) {
 			ResponseEntity<String> response = null;
 			response = restTemplateService.getRestResponse(attachementsUrl);
 			if( response != null ) {
-				try {
-					ObjectMapper mapper = new ObjectMapper();
-					attachments = mapper.readValue(response.getBody(),new TypeReference<Attachments>(){});
-					if( attachments != null ) {
-						attachmentsList = attachments.getAttachments();
-						logger.debug("Object 'Attachments' mapped correctly}");
-					}
-				}
-				catch(Exception e) {
-					logger.warn("Unable to map 'Attachments' object from json. Error Message:'", e.getMessage());
-					logger.warn("Unable to map 'Attachments' object from json:{}", response.getBody());
+				attachments = deserializeAttachments(response);
+				if( attachments != null ) {
+					attachmentsList = attachments.getAttachments();
 				}
 			}
 		}
@@ -281,11 +258,11 @@ public class MappingService {
 	 * @param attachment
 	 * @return
 	 */
-	public String getAttachmentUrl(Attachment attachment) {
-
-		String absoluteUrl = attachment.getXwikiAbsoluteUrl();
-		return restTemplateService.updateUrlScheme(absoluteUrl);	 
-	}
+//	public String getAttachmentUrl(Attachment attachment) {
+//
+//		String absoluteUrl = attachment.getXwikiAbsoluteUrl();
+//		return restTemplateService.updateUrlScheme(absoluteUrl);	 
+//	}
 
 	
 	/**
@@ -328,15 +305,89 @@ public class MappingService {
 	
 	
 	
+
+	/**
+	 * Return true if 'wiki' exists in available wikis list
+	 * @param wiki
+	 * @return
+	 */
+//	public boolean checkWikiExists(String targetWiki) {
+//
+//		boolean exists = false;
+//		Xwiki xwiki = null;
+//		String wikisHref = null;
+//		// get response from rest server
+//		String endpoint = resourcesPathManager.getApiEntryPoint();
+//		ResponseEntity<String> response = restTemplateService.getRestResponse(endpoint);
+//		if (response != null ) {
+//			xwiki = deserializeXwiki(response);
+//			if(xwiki != null) {
+//				for(Link link: xwiki.getLinks()) {
+//					if(link.getRel().equals(XWikiConstantsRelations.REL_WIKIS)) {
+//						wikisHref = link.getHref();
+//						break;
+//					}
+//				}
+//				// get available wikis
+//				List<Wiki> wikis = getAllWikis(wikisHref);
+//				if(wikis != null) {
+//					for(Wiki wiki: wikis) {
+//						if(wiki.getName().equals(targetWiki)) {
+//							exists = true;
+//							break;
+//						}
+//					}
+//				}
+//			}
+//		} 
+//		return exists;
+//	}
 	
 	
 	
 	
 	
+	//-----------------------------------------------------------
+	// DESERIALIZATION MANAGEMENT
+	//-----------------------------------------------------------
+
+	/**
+	 * Deserialize json response to 'Objects' object
+	 * @param response
+	 * @return a 'Attachments' object if the mapping was successful, null otherwise
+	 */
+	private Objects deserializeObjects(ResponseEntity<String> response) {
+
+		Objects objects = null;
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			objects = mapper.readValue(response.getBody(),new TypeReference<Objects>(){});
+			logger.debug("Object 'Objects' mapped correctly}");
+		}
+		catch(Exception e) {
+			ManageMappingExceptions(e, "Objects", response.getBody());
+		}
+		return objects;
+	}
 	
-	
-	
-	
+	/**
+	 * Deserialize json response to 'Attachments' object
+	 * @param response
+	 * @return a 'Attachments' object if the mapping was successful, null otherwise
+	 */
+	private Attachments deserializeAttachments(ResponseEntity<String> response) {
+
+		Attachments attachments = null;
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			attachments = mapper.readValue(response.getBody(),new TypeReference<Attachments>(){});
+			logger.debug("Object 'Attachments' mapped correctly}");
+		}
+		catch(Exception e) {
+			ManageMappingExceptions(e, "Attachments", response.getBody());
+		}
+		return attachments;
+	}
 	
 	
 	/**
@@ -489,66 +540,12 @@ public class MappingService {
 		return wikis;
 	}
 
-
-	/**
-	 * Return true if 'wiki' exists in available wikis list
-	 * @param wiki
-	 * @return
-	 */
-//	public boolean checkWikiExists(String targetWiki) {
-//
-//		boolean exists = false;
-//		Xwiki xwiki = null;
-//		String wikisHref = null;
-//		// get response from rest server
-//		String endpoint = resourcesPathManager.getApiEntryPoint();
-//		ResponseEntity<String> response = restTemplateService.getRestResponse(endpoint);
-//		if (response != null ) {
-//			xwiki = deserializeXwiki(response);
-//			if(xwiki != null) {
-//				for(Link link: xwiki.getLinks()) {
-//					if(link.getRel().equals(XWikiConstantsRelations.REL_WIKIS)) {
-//						wikisHref = link.getHref();
-//						break;
-//					}
-//				}
-//				// get available wikis
-//				List<Wiki> wikis = getAllWikis(wikisHref);
-//				if(wikis != null) {
-//					for(Wiki wiki: wikis) {
-//						if(wiki.getName().equals(targetWiki)) {
-//							exists = true;
-//							break;
-//						}
-//					}
-//				}
-//			}
-//		} 
-//		return exists;
-//	}
-	
-	/**
-	 * 
-	 * @param rel
-	 * @return 'href' link from 'rel' link
-	 */
-	public String getHref(String rel, List<Link> links) {
-
-		String href = null;
-		try {
-
-			for(Link link: links) {
-				if(link.getRel().equals(rel)) {
-					href = link.getHref();
-				} 
-			}
-		} catch(Exception e) {
-			logger.warn("Exception while retrieving 'href' from link {}. Error Message: {}",rel,  e.getMessage());
-		}
-		return href;
-	}
 	
 
+	//-----------------------------------------------------------
+	// EXCEPTION MANAGEMENT
+	//----------------------------------------------------------
+	
 	/**
 	 * Manage error messages depending on exception type
 	 * @param e the exception

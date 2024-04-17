@@ -6,6 +6,7 @@ import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.open4goods.xwiki.config.UrlManagementHelper;
 import org.open4goods.xwiki.config.XWikiConstantsResourcesPath;
 import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ public class XWikiAuthenticationService {
 	private MappingService mappingService;
 	private RestTemplateBuilder loginRestTemplateBuilder;
 	private RestTemplateService restTemplateService;
+	private UrlManagementHelper urlHelper;
 	
 	public XWikiAuthenticationService (MappingService mappingService,  RestTemplateService restTemplateService, XWikiServiceProperties xWikiProperties, RestTemplateBuilder restTemplateBuilder) throws Exception {
 		this.xWikiProperties = xWikiProperties;
@@ -39,7 +41,7 @@ public class XWikiAuthenticationService {
 		this.mappingService = mappingService;
 		this.resourcesPathManager = new XWikiConstantsResourcesPath(xWikiProperties.getBaseUrl(), xWikiProperties.getApiEntrypoint(), xWikiProperties.getApiWiki());
 		this.loginRestTemplateBuilder = restTemplateBuilder;
-
+		this.urlHelper = new UrlManagementHelper(xWikiProperties);
 	}
 	
 	
@@ -60,7 +62,7 @@ public class XWikiAuthenticationService {
 		ResponseEntity<String> response = null;
 
 		// first clean url: url decoding, check scheme and add query params if needed
-		String updatedEndpoint = this.restTemplateService.cleanUrl(endpoint);
+		String updatedEndpoint = this.urlHelper.cleanUrl(endpoint);
 		logger.info("request xwiki server with endpoint {}", updatedEndpoint);
 
 		if(updatedEndpoint != null) {
