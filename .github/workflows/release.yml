@@ -120,17 +120,7 @@ jobs:
       - name: Merge site
         run: cat PUSH-CHANGELOG.txt >> PR-CHANGELOG.txt          
     
-      ############################################
-      # Create the release
-      ###########################################    
 
-      - name: Create Release
-        uses: mikepenz/action-gh-release@v1 #softprops/action-gh-release
-        with:
-         body_path: ${{ github.workspace }}/PR-CHANGELOG.txt
-         body: ${{ steps.build_changelog.outputs.changelog }}
-         files: |
-             ./o4g-xwiki-springboot-starter/target/jreleaser/output.properties
             
 
           
@@ -170,5 +160,17 @@ jobs:
           JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.JRELEASER_GPG_PUBLIC_KEY }}
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: mvn deploy jreleaser:deploy -DaltDeploymentRepository=local::file:./target/staging-deploy        
+        
+      ############################################
+      # Create the github release
+      ###########################################    
+
+      - name: Create Release
+        uses: mikepenz/action-gh-release@v1 #softprops/action-gh-release
+        with:
+         body_path: ${{ github.workspace }}/PR-CHANGELOG.txt
+         body: ${{ steps.build_changelog.outputs.changelog }}
+         files: |
+             ./o4g-xwiki-springboot-starter/target/jreleaser/output.properties        
         
         
