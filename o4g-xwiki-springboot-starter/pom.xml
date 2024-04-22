@@ -11,14 +11,13 @@
 	</parent>
 
 	<groupId>org.open4goods</groupId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<artifactId>o4g-xwiki-springboot-starter</artifactId>
 	<packaging>jar</packaging>
 	<name>o4g-xwiki-spring-boot-starter</name>
 	<url>https://github.com/open4good/o4g-xwiki-spring-boot-starter</url>
 	
-	<description>A Xwiki Spring Starter, allowing authentication delegation and
-		content retrieval</description>
+	<description>A Xwiki Spring Starter, allowing authentication delegation and content retrieval</description>
 
 	<licenses>
 		<license>
@@ -140,12 +139,6 @@
 			<version>1.17.2</version>
 		</dependency>
 
-		<!--		<dependency>-->
-		<!--			<groupId>org.springframework.boot</groupId>-->
-		<!--			<artifactId>spring-boot-docker-compose</artifactId>-->
-		<!--		</dependency>-->
-
-
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
@@ -156,28 +149,6 @@
 			<artifactId>xwiki-platform-rest-model</artifactId>
 			<version>16.0.0</version>
 		</dependency>
-
-		<!--		<dependency>-->
-		<!--            <groupId>org.springframework.boot</groupId>-->
-		<!--            <artifactId>spring-boot-starter</artifactId>-->
-		<!--        </dependency>-->
-
-		<!--		<dependency>-->
-		<!--			<groupId>org.springframework.boot</groupId>-->
-		<!--			<artifactId>spring-boot-starter-security</artifactId>-->
-		<!--		</dependency>-->
-		<!--		<dependency>-->
-		<!--			<groupId>org.springframework.security</groupId>-->
-		<!--			<artifactId>spring-security-test</artifactId>-->
-		<!--			<scope>test</scope>-->
-		<!--		</dependency>-->
-
-		<!--		<dependency>-->
-		<!--			<groupId>org.springframework.boot</groupId>-->
-		<!--			<artifactId>spring-boot-devtools</artifactId>-->
-		<!--			<scope>runtime</scope>-->
-		<!--			<optional>true</optional>-->
-		<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -194,7 +165,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
-
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
