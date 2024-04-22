@@ -13,6 +13,7 @@
 	<groupId>org.open4goods</groupId>
 	<version>0.0.1-SNAPSHOT</version>
 	<artifactId>o4g-xwiki-springboot-starter</artifactId>
+	<packaging>jar</packaging>
 	<name>o4g-xwiki-spring-boot-starter</name>
 	<url>https://github.com/open4good/o4g-xwiki-spring-boot-starter</url>
 	
