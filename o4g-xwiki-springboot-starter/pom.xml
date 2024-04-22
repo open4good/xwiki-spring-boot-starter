@@ -75,7 +75,7 @@
 										<active>ALWAYS</active>
 										<url>https://s01.oss.sonatype.org/service/local</url>
 										<closeRepository>false</closeRepository>
-										<releaseRepository>false</releaseRepository>
+										<releaseRepository>true</releaseRepository>
 										<stagingRepositories>target/staging-deploy</stagingRepositories>
 									</maven-central>
 								</nexus2>
