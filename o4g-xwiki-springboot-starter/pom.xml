@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -11,7 +13,8 @@
 	<version>0.0.1</version>
 	<artifactId>o4g-xwiki-springboot-starter</artifactId>
 	<name>o4g-xwiki-spring-boot-starter</name>
-	<description>A Xwiki Spring Starter, allowing authentication delegation and	content retrieval</description>
+	<description>A Xwiki Spring Starter, allowing authentication delegation and
+		content retrieval</description>
 	<packaging>jar</packaging>
 	<url>https://github.com/open4good/o4g-xwiki-spring-boot-starter</url>
 
@@ -30,8 +33,8 @@
 	<developers>
 		<developer>
 			<name>Thierry Ledan</name>
-			
-			
+
+
 		</developer>
 		<developer>
 			<name>Goulven Furet</name>
@@ -79,6 +82,8 @@
 							<active>ALWAYS</active>
 							<armored>true</armored>
 						</signing>
+
+
 						<deploy>
 							<maven>
 								<nexus2>
@@ -86,8 +91,10 @@
 										<active>ALWAYS</active>
 										<url>
 											https://s01.oss.sonatype.org/service/local</url>
-										<closeRepository>false</closeRepository>
-										<releaseRepository>true</releaseRepository>
+										<snapshotUrl>
+											https://s01.oss.sonatype.org/content/repositories/snapshots/</snapshotUrl>
+										<closeRepository>true</closeRepository>
+										<releaseRepository>false</releaseRepository>
 										<stagingRepositories>
 											target/staging-deploy</stagingRepositories>
 									</maven-central>
@@ -135,9 +142,6 @@
 	<properties>
 		<java.version>21</java.version>
 	</properties>
-
-
-
 
 
 	<dependencies>
