@@ -82,8 +82,8 @@
 						<deploy>
 							<maven>
 								<nexus2>
-									<applyMavenCentralRules>true</applyMavenCentralRules>
 									<maven-central>
+										<applyMavenCentralRules>true</applyMavenCentralRules>
 										<active>ALWAYS</active>
 										<url>https://s01.oss.sonatype.org/service/local</url>
   							            <snapshotUrl>https://s01.oss.sonatype.org/content/repositories/snapshots/</snapshotUrl>
