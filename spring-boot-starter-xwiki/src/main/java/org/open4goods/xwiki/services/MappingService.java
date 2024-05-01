@@ -268,6 +268,7 @@ public class MappingService {
 	/**
 	 * 
 	 * @param url
+	 * TODO : Should provide a streamed version 
 	 * @return
 	 */
 	public byte[] downloadAttachment( String url ) {
