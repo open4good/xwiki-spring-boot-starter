@@ -9,8 +9,8 @@
 
 	<groupId>org.open4goods</groupId>
 	<version>0.0.1</version>
-	<artifactId>o4g-xwiki-springboot-starter</artifactId>
-	<name>o4g-xwiki-springboot-starter</name>
+	<artifactId>spring-boot-starter-xwiki</artifactId>
+	<name>spring-boot-starter-xwiki</name>
 	<inceptionYear>2024</inceptionYear>
 	<description>A Xwiki Spring Starter, allowing authentication delegation and	content retrieval</description>
 	<packaging>jar</packaging>
