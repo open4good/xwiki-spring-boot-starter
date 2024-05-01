@@ -50,7 +50,7 @@ jobs:
       ###########################################   
                                 
       - name: Build  Maven site
-        working-directory: ./o4g-xwiki-springboot-starter      
+        working-directory: ./spring-boot-starter-xwiki   
         run: mvn --batch-mode clean install
                                               
      ############################################
@@ -139,7 +139,7 @@ jobs:
  #       uses: actions/configure-pages@v4    
 
 #      - name: Merge site
-#        working-directory: ./o4g-xwiki-springboot-starter      
+#        working-directory: ./spring-boot-starter-xwiki      
 #        run: cp -r target/staging/* src/main/site/maven/
                         
           
@@ -158,7 +158,7 @@ jobs:
         
         
       - name: Publish package
-        working-directory: ./o4g-xwiki-springboot-starter      
+        working-directory: ./spring-boot-starter-xwiki  
         env:
           JRELEASER_NEXUS2_USERNAME: ${{ secrets.JRELEASER_NEXUS2_USERNAME }}
           JRELEASER_NEXUS2_PASSWORD: ${{ secrets.JRELEASER_NEXUS2_PASSWORD }}
@@ -178,6 +178,6 @@ jobs:
          body_path: ${{ github.workspace }}/PR-CHANGELOG.txt
          body: ${{ steps.build_changelog.outputs.changelog }}
          files: |
-             ./o4g-xwiki-springboot-starter/target/jreleaser/output.properties        
+             ./spring-boot-starter-xwiki/target/jreleaser/output.properties        
         
         
