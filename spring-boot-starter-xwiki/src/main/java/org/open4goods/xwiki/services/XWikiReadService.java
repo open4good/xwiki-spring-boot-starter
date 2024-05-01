@@ -37,10 +37,10 @@ public class XWikiReadService {
 	
 	private XWikiServiceProperties xWikiProperties;
 	private XWikiConstantsResourcesPath resourcesPathManager;
-	private MappingService mappingService;
+	private XwikiMappingService mappingService;
 	private UrlManagementHelper urlHelper;
 	
-	public XWikiReadService (MappingService mappingService, XWikiServiceProperties xWikiProperties) throws Exception {
+	public XWikiReadService (XwikiMappingService mappingService, XWikiServiceProperties xWikiProperties) {
 		
 		this.xWikiProperties = xWikiProperties;
 		this.mappingService = mappingService;

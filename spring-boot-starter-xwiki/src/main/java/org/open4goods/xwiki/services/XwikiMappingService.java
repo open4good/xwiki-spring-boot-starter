@@ -39,15 +39,15 @@ import io.micrometer.common.util.StringUtils;
  * @author Thierry.Ledan
  *
  */
-public class MappingService {
+public class XwikiMappingService {
 
-	private static Logger logger = LoggerFactory.getLogger(MappingService.class);
+	private static Logger logger = LoggerFactory.getLogger(XwikiMappingService.class);
 
 	RestTemplateService restTemplateService;
 	XWikiServiceProperties properties;
 	private UrlManagementHelper urlHelper;
 	
-	public MappingService(RestTemplateService restTemplateService, XWikiServiceProperties properties){
+	public XwikiMappingService(RestTemplateService restTemplateService, XWikiServiceProperties properties){
 		this.restTemplateService = restTemplateService;
 		this.properties = properties;
 		this.urlHelper = new UrlManagementHelper(properties);

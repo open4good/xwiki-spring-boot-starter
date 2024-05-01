@@ -30,12 +30,12 @@ public class XWikiAuthenticationService {
 
 	private XWikiServiceProperties xWikiProperties;
 	private XWikiConstantsResourcesPath resourcesPathManager;
-	private MappingService mappingService;
+	private XwikiMappingService mappingService;
 	private RestTemplateBuilder loginRestTemplateBuilder;
 	private RestTemplateService restTemplateService;
 	private UrlManagementHelper urlHelper;
 	
-	public XWikiAuthenticationService (MappingService mappingService,  RestTemplateService restTemplateService, XWikiServiceProperties xWikiProperties, RestTemplateBuilder restTemplateBuilder) throws Exception {
+	public XWikiAuthenticationService (XwikiMappingService mappingService,  RestTemplateService restTemplateService, XWikiServiceProperties xWikiProperties, RestTemplateBuilder restTemplateBuilder) throws Exception {
 		this.xWikiProperties = xWikiProperties;
 		this.restTemplateService = restTemplateService;
 		this.mappingService = mappingService;

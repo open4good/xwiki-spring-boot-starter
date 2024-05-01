@@ -17,10 +17,10 @@ public class XWikiObjectService {
 	
 	private XWikiServiceProperties xWikiProperties;
 	private XWikiConstantsResourcesPath resourcesPathManager;
-	private MappingService mappingService;
+	private XwikiMappingService mappingService;
 	private UrlManagementHelper urlHelper;
 	
-	public XWikiObjectService (MappingService mappingService, XWikiServiceProperties xWikiProperties) throws Exception {
+	public XWikiObjectService (XwikiMappingService mappingService, XWikiServiceProperties xWikiProperties) throws Exception {
 		
 		this.xWikiProperties = xWikiProperties;
 		this.mappingService = mappingService;

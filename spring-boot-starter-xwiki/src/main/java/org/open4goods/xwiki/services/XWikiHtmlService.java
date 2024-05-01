@@ -13,12 +13,12 @@ public class XWikiHtmlService {
 
 	private XWikiServiceProperties xWikiProperties;
 	private XWikiConstantsResourcesPath resourcesPathManager;
-	private MappingService mappingService;
+	private XwikiMappingService mappingService;
 	private RestTemplateService restTemplateService;
 	
 	private static Logger LOGGER = LoggerFactory.getLogger(XWikiHtmlService.class);
 
-	public XWikiHtmlService( MappingService mappingService, RestTemplateService restTemplateService, XWikiServiceProperties xWikiProperties) {
+	public XWikiHtmlService( XwikiMappingService mappingService, RestTemplateService restTemplateService, XWikiServiceProperties xWikiProperties) {
 		this.xWikiProperties = xWikiProperties;
 		this.mappingService = mappingService;
 		this.restTemplateService = restTemplateService;

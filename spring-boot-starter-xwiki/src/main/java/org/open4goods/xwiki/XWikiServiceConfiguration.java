@@ -3,7 +3,7 @@ package org.open4goods.xwiki;
 
 import org.open4goods.xwiki.authentication.XwikiAuthenticationProvider;
 import org.open4goods.xwiki.config.XWikiServiceProperties;
-import org.open4goods.xwiki.services.MappingService;
+import org.open4goods.xwiki.services.XwikiMappingService;
 import org.open4goods.xwiki.services.RestTemplateService;
 import org.open4goods.xwiki.services.XWikiAuthenticationService;
 import org.open4goods.xwiki.services.XWikiHtmlService;
@@ -109,13 +109,13 @@ public class XWikiServiceConfiguration {
 	 * @return
 	 */
 	@Bean( "mappingService" )
-	MappingService getMappingervice( 
+	XwikiMappingService getMappingervice( 
 			@Qualifier("restTemplateService") RestTemplateService restTemplateService
 			) {
 		
-		MappingService mappingService = null;
+		XwikiMappingService mappingService = null;
 		try {
-			mappingService = new MappingService(restTemplateService, xWikiProperties);
+			mappingService = new XwikiMappingService(restTemplateService, xWikiProperties);
 		} catch(Exception e) {
 			  logger.error("Unable to create MappingService as bean. error message {}", e.getMessage());
 		}
@@ -129,7 +129,7 @@ public class XWikiServiceConfiguration {
 	 * @return
 	 */
 	@Bean( name = "xwikiReadService" )
-	XWikiReadService getXwikiReadService( @Qualifier("mappingService") MappingService mappingService ) {
+	XWikiReadService getXwikiReadService( @Qualifier("mappingService") XwikiMappingService mappingService ) {
 		
 		XWikiReadService XWikiReadService = null;
 		try {
@@ -150,7 +150,7 @@ public class XWikiServiceConfiguration {
 	@Bean( name = "xwikiHtmlService" )
 	XWikiHtmlService getXwikiHtmlService( 
 			// TODO:check what is really needed !!
-			@Qualifier("mappingService") MappingService mappingService,
+			@Qualifier("mappingService") XwikiMappingService mappingService,
 			@Qualifier("restTemplateService") RestTemplateService restTemplateService
 			) {
 		
@@ -170,7 +170,7 @@ public class XWikiServiceConfiguration {
 	 * @return
 	 */
 	@Bean( name = "xwikiObjectService" )
-	XWikiObjectService getXwikiObjectService( @Qualifier("mappingService") MappingService mappingService ) {
+	XWikiObjectService getXwikiObjectService( @Qualifier("mappingService") XwikiMappingService mappingService ) {
 		
 		XWikiObjectService xwikiObjectService = null;
 		try {
@@ -191,7 +191,7 @@ public class XWikiServiceConfiguration {
 	 */
 	@Bean( name = "xwikiAuthenticationService" )
 	XWikiAuthenticationService getXwikiAuthenticationService( 
-			@Qualifier("mappingService") MappingService mappingService,
+			@Qualifier("mappingService") XwikiMappingService mappingService,
 			@Qualifier("restTemplateService") RestTemplateService restTemplateService
 			) {
 		
