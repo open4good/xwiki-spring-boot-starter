@@ -39,6 +39,6 @@ jobs:
       ###########################################    
                 
       - name: Build and test with Maven
-        working-directory: ./o4g-xwiki-springboot-starter      
+        working-directory: ./spring-boot-starter-xwiki      
         run: mvn --batch-mode --update-snapshots install
                 
