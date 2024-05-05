@@ -1,13 +1,22 @@
 package org.open4goods.xwiki.services;
 
+import java.io.StringReader;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
+
 
 import org.open4goods.xwiki.config.XWikiConstantsResourcesPath;
 import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.convert.ConversionException;
 import org.springframework.http.ResponseEntity;
+import org.xwiki.component.embed.EmbeddableComponentManager;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.rendering.converter.Converter;
+import org.xwiki.rendering.renderer.printer.DefaultWikiPrinter;
+import org.xwiki.rendering.renderer.printer.WikiPrinter;
+import org.xwiki.rendering.syntax.Syntax;
 
 public class XWikiHtmlService {
 
@@ -95,7 +104,27 @@ public class XWikiHtmlService {
 	}
 	
 	
-	
+	 public String renderXWiki20SyntaxAsXHTML(String contentXwiki21) throws ComponentLookupException, ConversionException
+	    {
+	        try {
+				// Initialize Rendering components and allow getting instances
+				EmbeddableComponentManager cm = new EmbeddableComponentManager();
+				cm.initialize(this.getClass().getClassLoader());
+
+				// Use the Converter component to convert between one syntax to another.
+				Converter converter = cm.getInstance(Converter.class);
+
+				// Convert input in XWiki Syntax 2.1 into XHTML. The result is stored in the printer.
+				WikiPrinter printer = new DefaultWikiPrinter();
+				converter.convert(new StringReader(contentXwiki21), Syntax.XWIKI_2_1, Syntax.XHTML_1_0, printer);
+
+				return printer.toString();
+			} catch (Exception e) {
+				LOGGER.error("Error while rendering XWiki content to XHTML.",e);
+				return "Error while rendering XWiki content to XHTML.";
+			}
+	       
+	    }
 	
 	
 	// TODO : Below should be in XWikiConstantsResourcesPath ?
