@@ -160,6 +160,8 @@ jobs:
       - name: Publish package
         working-directory: ./spring-boot-starter-xwiki  
         env:
+          MAVEN_USERNAME: ${{ secrets.JRELEASER_NEXUS2_USERNAME }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.JRELEASER_NEXUS2_PASSWORD }}
           JRELEASER_NEXUS2_USERNAME: ${{ secrets.JRELEASER_NEXUS2_USERNAME }}
           JRELEASER_NEXUS2_PASSWORD: ${{ secrets.JRELEASER_NEXUS2_PASSWORD }}
           JRELEASER_GPG_PASSPHRASE: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
@@ -168,16 +170,15 @@ jobs:
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: mvn deploy jreleaser:deploy -DaltDeploymentRepository=local::file:./target/staging-deploy        
         
-      ############################################
-      # Create the github release
-      ###########################################    
+      # Persist logs
 
-      - name: Create Release
-        uses: mikepenz/action-gh-release@v1 #softprops/action-gh-release
+      - name: JReleaser release output
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-         body_path: ${{ github.workspace }}/PR-CHANGELOG.txt
-         body: ${{ steps.build_changelog.outputs.changelog }}
-         files: |
-             ./spring-boot-starter-xwiki/target/jreleaser/output.properties        
+          name: jreleaser-release
+          path: |
+            out/jreleaser/trace.log
+            out/jreleaser/output.properties   
         
         
