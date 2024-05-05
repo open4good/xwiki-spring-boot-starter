@@ -43,6 +43,13 @@ public class XWikiHtmlService {
 //		return getWebResponse( xwikiWebUrl );
 //	}
 	
+	
+	
+	public String html( String xwikiPath) {
+		
+		return getWebPage(xwikiPath, false);
+	}
+		
 	/**
 	 * Returns xwiki web server response from wikiPage
 	 * with an absolute or relative path
@@ -91,19 +98,31 @@ public class XWikiHtmlService {
 	
 	
 	
-	
+	// TODO : Below should be in XWikiConstantsResourcesPath ?
 	
 	
 	
 	
 	/**
-	 * Get the absolute url to web page
+	 * Get the absolute url to the wiki page in view mode
 	 * @param xwikiPath
 	 * @return
 	 */
-	public String getWebPageUrl( String xwikiPath ) {	
+	public String getViewPageUrl( String xwikiPath ) {	
 		return resourcesPathManager.getViewpath() + URLDecoder.decode(xwikiPath, Charset.defaultCharset());
 	}
+	
+	
+	/**
+	 * Get the absolute url to web page in edit mode
+	 * @param xwikiPath
+	 * @return
+	 */
+	public String getEditPageUrl( String xwikiPath ) {	
+		return resourcesPathManager.getEditpath() + URLDecoder.decode(xwikiPath, Charset.defaultCharset());
+	}
+	
+	
 	
 	/**
 	 * Get the URL of a Page attachment (image...) given its name and space

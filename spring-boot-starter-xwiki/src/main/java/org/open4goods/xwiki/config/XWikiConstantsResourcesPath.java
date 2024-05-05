@@ -28,7 +28,9 @@ public class XWikiConstantsResourcesPath {
 	
 	// VIEW CONSTANTS 
 	private static final String VIEW_PATH = "bin/view";
-	
+	// EDIT CONSTANTS 
+	private static final String EDIT_PATH = "bin/edit";
+		
 	// download 
 	private static final String DOWNLOAD_PATH = "bin/download";
 	
@@ -84,6 +86,16 @@ public class XWikiConstantsResourcesPath {
 				URI_SEPARATOR;
 	}
 	
+	/**
+	 * returns the path to get xwiki web page
+	 * @return
+	 */
+	public String getEditpath() {
+		return getBaseUrl() +
+				URI_SEPARATOR +
+				EDIT_PATH +
+				URI_SEPARATOR;
+	}
 	
 	/**
 	 * returns the path to get xwiki web page
