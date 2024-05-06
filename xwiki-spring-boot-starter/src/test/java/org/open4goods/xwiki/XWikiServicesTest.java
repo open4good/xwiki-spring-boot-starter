@@ -26,7 +26,7 @@ public class XWikiServicesTest {
 	@Test
 	void testHtmlRendering() {
 		
-		String content = xwikiHtmlService.html("= Bienvenue sur votre Wiki =\n");
+		String content = xwikiHtmlService.renderXWiki20SyntaxAsXHTML("= Bienvenue sur votre Wiki =\n");
 		
 		
 		System.out.println(content);

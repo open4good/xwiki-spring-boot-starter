@@ -104,7 +104,7 @@ public class XWikiHtmlService {
 	}
 	
 	
-	 public String renderXWiki20SyntaxAsXHTML(String contentXwiki21) throws ComponentLookupException, ConversionException
+	 public String renderXWiki20SyntaxAsXHTML(String contentXwiki21)
 	    {
 	        try {
 				// Initialize Rendering components and allow getting instances
