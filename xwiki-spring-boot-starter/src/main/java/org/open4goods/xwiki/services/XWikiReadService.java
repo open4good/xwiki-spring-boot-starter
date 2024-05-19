@@ -2,10 +2,12 @@ package org.open4goods.xwiki.services;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.open4goods.xwiki.config.UrlManagementHelper;
 import org.open4goods.xwiki.config.XWikiConstantsRelations;
 import org.open4goods.xwiki.config.XWikiConstantsResourcesPath;
@@ -60,22 +62,41 @@ public class XWikiReadService {
 //		return resourcesPathManager.getBaseUrl();
 //	}
 	
+
 	/**
 	 * Request the xwiki rest api to GET a xwiki Page resource from space path and page name.
 	 * Then create a XWiki Page Object from the rest response.
 	 * 
-	 * @param spacePath path to the Page resource
-	 * @param pageName name of the page resource
+	 * @param path to the page
 	 * @return the Page object from GET request 
 	 * 
 	 */
-	public Page getPage(String spacePath, String pageName) throws ResponseStatusException {
-		// replace '.' with '/spaces/' to get all nested spaces if needed
-		String pathTopage = spacePath.replace(".", "/spaces/");
-		String endpoint = resourcesPathManager.getPageEndpoint(pathTopage, pageName);	
-		return this.mappingService.mapPage(endpoint);
+	public Page getPage(String... path) throws ResponseStatusException {
+
+		
+		if (path.length < 2) {
+			LOGGER.warn("Must have at least a space and a page name");
+		}
+		
+		
+		StringBuilder spacePath = new StringBuilder(resourcesPathManager.getSpacesEndpoint());
+		List<String> frags = Arrays.asList(path);
+		
+		List<String> spaces = frags.subList(0, path.length-1);
+		String page = frags.getLast();
+		
+		spacePath.append(StringUtils.join(spaces,"/spaces/"));
+		spacePath.append("/pages/");
+		spacePath.append(page);
+		
+		return this.mappingService.mapPage(spacePath.toString());
+		
+		
 	}
 
+	
+	
+	
 	/**
 	 * Request the xwiki rest api to GET all xwiki Page summaries resources from space path.
 	 * Then create a XWiki Pages Object from the rest response.
