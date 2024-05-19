@@ -77,8 +77,6 @@ public class XWikiReadService {
 		if (path.length < 2) {
 			LOGGER.warn("Must have at least a space and a page name");
 		}
-		
-		
 		StringBuilder spacePath = new StringBuilder(resourcesPathManager.getSpacesEndpoint());
 		List<String> frags = Arrays.asList(path);
 		
@@ -90,8 +88,6 @@ public class XWikiReadService {
 		spacePath.append(page);
 		
 		return this.mappingService.mapPage(spacePath.toString());
-		
-		
 	}
 
 	

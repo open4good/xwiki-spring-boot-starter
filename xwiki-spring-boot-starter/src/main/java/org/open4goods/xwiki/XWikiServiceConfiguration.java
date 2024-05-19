@@ -2,6 +2,7 @@ package org.open4goods.xwiki;
 
 
 import org.open4goods.xwiki.authentication.XwikiAuthenticationProvider;
+import org.open4goods.xwiki.config.XWikiConstantsResourcesPath;
 import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.open4goods.xwiki.services.XwikiMappingService;
 import org.open4goods.xwiki.services.RestTemplateService;
@@ -9,6 +10,7 @@ import org.open4goods.xwiki.services.XWikiAuthenticationService;
 import org.open4goods.xwiki.services.XWikiHtmlService;
 import org.open4goods.xwiki.services.XWikiObjectService;
 import org.open4goods.xwiki.services.XWikiReadService;
+import org.open4goods.xwiki.services.XwikiFacadeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,24 @@ public class XWikiServiceConfiguration {
 		this.xWikiProperties = xWikiProps;
 	}
 
+	
+
+	/**
+	 * restTemplate dedicated to restful api request
+	 * 
+	 * @param builder
+	 * @return
+	 */
+	@Bean(name = "xwikiFacadeService")
+	
+	XwikiFacadeService xwikiFacadeService(
+										  @Autowired XwikiMappingService mappingService,
+										  @Autowired XWikiReadService xWikiReadService,
+										  @Autowired XWikiHtmlService xWikiHtmlService,
+										  @Autowired XWikiObjectService xWikiObjectService) {
+		logger.info("Creating xwikiFacadeservice");
+		return new XwikiFacadeService(mappingService, xWikiObjectService, xWikiHtmlService, xWikiReadService, xWikiObjectService, xWikiHtmlService);
+	}
 	
 	/**
 	 * restTemplate dedicated to restful api request
