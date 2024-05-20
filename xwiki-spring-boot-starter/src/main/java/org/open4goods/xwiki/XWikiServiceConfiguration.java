@@ -72,9 +72,11 @@ public class XWikiServiceConfiguration {
 	@Bean( name = "restTemplate" )
 	RestTemplate restTemplate(RestTemplateBuilder builder) {
 		
-		RestTemplate restTemplate =  builder.basicAuthentication(xWikiProperties.getUsername(), xWikiProperties.getPassword()).build();
+		RestTemplate restTemplate =  builder
+//				.basicAuthentication(xWikiProperties.getUsername(), xWikiProperties.getPassword())
+				.build();
 		//restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory(xWikiProperties.getApiEntrypoint()));
-		logger.info("RestTemplate created with basic authentication to request XWIKI RESTFUL API SERVER");
+//		logger.info("RestTemplate created with basic authentication to request XWIKI RESTFUL API SERVER");
 		return restTemplate;
 	}
 
@@ -87,8 +89,9 @@ public class XWikiServiceConfiguration {
 	RestTemplate webTemplate(RestTemplateBuilder builder) {
 		
 		RestTemplate webTemplate =  
-				builder.basicAuthentication(xWikiProperties.getUsername(), xWikiProperties.getPassword()).
-				defaultHeader("accept", "text/html ").
+				builder
+//					.basicAuthentication(xWikiProperties.getUsername(), xWikiProperties.getPassword())
+					.defaultHeader("accept", "text/html ").
 				build();
 		
 		logger.info("WebTemplate created with basic authentication and headers to request XWIKI WEB SERVER");

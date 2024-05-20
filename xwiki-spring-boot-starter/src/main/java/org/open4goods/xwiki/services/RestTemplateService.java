@@ -1,10 +1,15 @@
 package org.open4goods.xwiki.services;
 
+import java.util.Base64;
+
 import org.open4goods.xwiki.config.UrlManagementHelper;
 import org.open4goods.xwiki.config.XWikiConstantsResourcesPath;
 import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientResponseException;
@@ -22,7 +27,7 @@ public class RestTemplateService {
 
 	private RestTemplate restTemplate;
 	private RestTemplate webTemplate;
-	//private XWikiServiceProperties properties;
+	private XWikiServiceProperties properties;
 	private XWikiConstantsResourcesPath resourcesPathManager;
 	private UrlManagementHelper urlHelper;;
 	
@@ -31,7 +36,7 @@ public class RestTemplateService {
 	public RestTemplateService(RestTemplate restTemplate, RestTemplate webTemplate, XWikiServiceProperties properties) {
 		this.restTemplate = restTemplate;
 		this.webTemplate = webTemplate;
-		//this.properties = properties;
+		this.properties = properties;
 		this.urlHelper = new UrlManagementHelper(properties);
 		//this.resourcesPathManager = new XWikiConstantsResourcesPath(this.properties.getBaseUrl(), this.properties.getApiEntrypoint(), this.properties.getApiWiki());
 	}
@@ -52,7 +57,11 @@ public class RestTemplateService {
 				// first clean url: url decoding, check scheme and add query params if needed
 				updatedEndpoint = urlHelper.cleanUrl(endpoint);
 				logger.info("request xwiki server with endpoint {}", updatedEndpoint);
-				response = restTemplate.getForEntity(updatedEndpoint, String.class);
+				
+				HttpHeaders headers = authenticatedHeaders(properties);	
+				
+				HttpEntity<String> request = new HttpEntity<String>(headers);
+				response = restTemplate.exchange(updatedEndpoint, HttpMethod.GET, request, String.class);
 			} catch(RestClientResponseException rcre) {
 				logger.warn("HttpClientErrorException exception  - uri:{} - error:{}", updatedEndpoint, rcre.getStackTrace());
 				throw new ResponseStatusException(rcre.getStatusCode(),rcre.getResponseBodyAsString());
@@ -76,7 +85,9 @@ public class RestTemplateService {
 		logger.info("request xwiki web server with url {}", xwikiWebUrl);
 		if(xwikiWebUrl != null) {
 			try {
-				response = webTemplate.getForEntity(xwikiWebUrl, String.class);
+				HttpHeaders headers = authenticatedHeaders(properties);							
+				HttpEntity<String> request = new HttpEntity<String>(headers);
+				response = restTemplate.exchange(xwikiWebUrl, HttpMethod.GET, request, String.class);
 			} catch(Exception e) {
 				logger.warn("Exception while trying to reach url:{} - error:{}", xwikiWebUrl, e.getMessage());
 			}
@@ -99,7 +110,11 @@ public class RestTemplateService {
 		ResponseEntity<byte[]> response = null;
 		if(url != null) {
 			try {
-				response = webTemplate.getForEntity(url, byte[].class);
+				
+				HttpHeaders headers = authenticatedHeaders(properties);							
+				HttpEntity<String> request = new HttpEntity<String>(headers);
+				response = restTemplate.exchange(url, HttpMethod.GET, request, byte[].class);
+			
 			} catch(Exception e) {
 				logger.warn("Exception while trying to reach url:{} - error:{}", url, e.getMessage());
 			}
@@ -183,4 +198,40 @@ public class RestTemplateService {
 //		return uriWithParams;
 //
 //	}
+	
+	
+	/**
+	 * Retrieve http headers that will allow to authenticate against the wiki
+	 * @param user
+	 * @param password
+	 * @return
+	 */
+	private HttpHeaders authenticatedHeaders(String user, String password) {
+		String plainCreds = user +":"+password;
+		byte[] plainCredsBytes = plainCreds.getBytes();
+		byte[] base64CredsBytes = Base64.getEncoder().encode(plainCredsBytes);
+		String base64Creds = new String(base64CredsBytes);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Basic " + base64Creds);
+		headers.add("accept", "*/*");
+		headers.add("user-agent", "curl/7.68.0");
+		headers.add("Host", "wiki.nudger.fr");
+		
+		
+
+		
+		return headers;
+	}
+
+	/**
+	 * Retrieve http headers that will allow to authenticate against the wiki, using the configuration
+	 * @param config
+	 * @return
+	 */
+	private HttpHeaders authenticatedHeaders(XWikiServiceProperties props) {
+		return authenticatedHeaders(props.getUsername(), props.getPassword());
+	}
+
+	
 }
