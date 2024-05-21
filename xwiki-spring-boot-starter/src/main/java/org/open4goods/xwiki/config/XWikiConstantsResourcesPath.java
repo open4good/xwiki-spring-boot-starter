@@ -5,6 +5,7 @@ package org.open4goods.xwiki.config;
  * handles path for endpoints
  * 
  * @author Thierry.Ledan
+ * TODO : In properties class, or static (or both !)
  */
 public class XWikiConstantsResourcesPath {
 

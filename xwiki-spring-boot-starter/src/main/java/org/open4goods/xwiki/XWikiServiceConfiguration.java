@@ -60,7 +60,7 @@ public class XWikiServiceConfiguration {
 										  @Autowired XWikiHtmlService xWikiHtmlService,
 										  @Autowired XWikiObjectService xWikiObjectService) {
 		logger.info("Creating xwikiFacadeservice");
-		return new XwikiFacadeService(mappingService, xWikiObjectService, xWikiHtmlService, xWikiReadService, xWikiObjectService, xWikiHtmlService);
+		return new XwikiFacadeService(mappingService, xWikiObjectService, xWikiHtmlService, xWikiReadService, xWikiObjectService, xWikiHtmlService, xWikiProperties);
 	}
 	
 	/**
@@ -71,10 +71,12 @@ public class XWikiServiceConfiguration {
 	 */
 	@Bean( name = "restTemplate" )
 	RestTemplate restTemplate(RestTemplateBuilder builder) {
+	
 		
-		RestTemplate restTemplate =  builder
+		//TOODO : WTF : If resttemplate is build from builder, authentication does not works ! (global or by header in the services)
+//		RestTemplate restTemplate =  builder
 //				.basicAuthentication(xWikiProperties.getUsername(), xWikiProperties.getPassword())
-				.build();
+//				.build();
 		//restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory(xWikiProperties.getApiEntrypoint()));
 //		logger.info("RestTemplate created with basic authentication to request XWIKI RESTFUL API SERVER");
 		return new RestTemplate();

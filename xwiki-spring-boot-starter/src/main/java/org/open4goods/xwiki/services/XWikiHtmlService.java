@@ -154,6 +154,7 @@ public class XWikiHtmlService {
 	
 	
 	/**
+	 * TODO : wrong place (see other, have to mutualize in the properties class, i guess)
 	 * Get the URL of a Page attachment (image...) given its name and space
 	 * @param space
 	 * @param name

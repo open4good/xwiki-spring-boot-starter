@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.xwiki.rest.model.jaxb.Link;
-
+// TODO : Should be directly in properties class
 public class UrlManagementHelper {
 
 	private XWikiServiceProperties properties;
@@ -28,6 +28,7 @@ public class UrlManagementHelper {
 
 		String updated = url;
 		if(url != null && properties.isHttpsOnly()) {
+			// TODO : Should be in conf, or should be goof opn the wiki side
 			updated = url.replaceFirst("http:", "https:");
 		}
 		return updated;
@@ -105,6 +106,10 @@ public class UrlManagementHelper {
 		} catch(Exception e) {
 			logger.warn("Exception while retrieving 'href' from link {}. Error Message: {}",rel,  e.getMessage());
 		}
+		
+		// TODO : Tweak : Should be properly fixed on the wiki side (???). Or from conf, a "forceScheme"
+		
+		href = href.replace("http://", "https://");
 		return href;
 	}
 	
