@@ -77,7 +77,7 @@ public class XWikiServiceConfiguration {
 				.build();
 		//restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory(xWikiProperties.getApiEntrypoint()));
 //		logger.info("RestTemplate created with basic authentication to request XWIKI RESTFUL API SERVER");
-		return restTemplate;
+		return new RestTemplate();
 	}
 
 	/**

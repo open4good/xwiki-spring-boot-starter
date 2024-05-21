@@ -214,13 +214,6 @@ public class RestTemplateService {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Basic " + base64Creds);
-		headers.add("accept", "*/*");
-		headers.add("user-agent", "curl/7.68.0");
-		headers.add("Host", "wiki.nudger.fr");
-		
-		
-
-		
 		return headers;
 	}
 
