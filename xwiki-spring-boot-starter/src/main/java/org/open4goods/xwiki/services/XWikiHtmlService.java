@@ -20,6 +20,7 @@ import org.xwiki.rendering.syntax.Syntax;
 
 public class XWikiHtmlService {
 
+	public static final String PROXYFIED_FOLDER = "/wiki-files";
 	private XWikiServiceProperties xWikiProperties;
 	private XWikiConstantsResourcesPath resourcesPathManager;
 	private XwikiMappingService mappingService;
@@ -65,6 +66,7 @@ public class XWikiHtmlService {
 	 * @param xwikiPath path to web page
 	 * @param withAbsolutePath true if 'xwikiPath' is absolute
 	 * @return html response
+	 * 	 * TOTO : Remove when rendering client side possible (waiting for jakarta migration)
 	 */
 	// TODO: manage response error / exceptions
 	public String getWebPage( String xwikiPath, boolean withAbsolutePath ) {
@@ -82,6 +84,7 @@ public class XWikiHtmlService {
 		ResponseEntity<String> response = this.restTemplateService.getWebResponse( xwikiWebUrl );
 		if( response == null ) {
 			// manage error/exception
+			// TODO
 		} else {
 			// code status 2xx
 			try {
@@ -100,6 +103,49 @@ public class XWikiHtmlService {
 				LOGGER.error("Cannot render to html page at " + xwikiWebUrl,e);
 			}
 		}
+		return htmlResult;
+	}
+	
+
+	/**
+	 * Ge!t HTML content for a WebPAge instance 
+	 * TOTO : Remove when rendering client side possible (waiting for jakarta migration)
+	 * @param xwikiRelativeUrl
+	 * @return
+	 */
+	public String getHtmlClassWebPage(String xwikiRelativeUrl) {
+	
+		
+		xwikiRelativeUrl = xwikiRelativeUrl.replace("xwiki:", "");
+		xwikiRelativeUrl = xwikiRelativeUrl.replace(".", "/");
+		
+		String htmlResult = null;
+		
+		// web Page url
+		String xwikiWebUrl = URLDecoder.decode(xwikiRelativeUrl, Charset.defaultCharset());
+
+			xwikiWebUrl = resourcesPathManager.getViewpath() + xwikiWebUrl;
+		// request server
+		ResponseEntity<String> response = this.restTemplateService.getWebResponse( xwikiWebUrl );
+		if( response == null ) {
+			// manage error/exception
+			//TODO
+		} else {
+			// code status 2xx
+			try {
+				String raw= response.getBody();
+				raw = raw.substring(raw.lastIndexOf("<dd>")+4);
+				raw = raw.substring(0, raw.lastIndexOf("</dd>"));
+				htmlResult = raw;
+			}
+			catch (Exception e) {
+				LOGGER.error("Cannot render to html page at " + xwikiWebUrl,e);
+			}
+		}
+		
+		//TODO : Markup should be mutualized with BlogController / downloadAttachment mapping
+		htmlResult = htmlResult.replace("\"/bin/download","\""+PROXYFIED_FOLDER);
+		
 		return htmlResult;
 	}
 	
@@ -173,6 +219,8 @@ public class XWikiHtmlService {
 	public byte[] getAttachment( String url ) {
 		return this.mappingService.downloadAttachment(url);
 	}
+
+
 	
 	
 }

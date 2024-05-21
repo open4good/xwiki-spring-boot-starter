@@ -57,17 +57,14 @@ public class XwikiFacadeService {
 //		String htmlContent = xWikiHtmlService.renderXWiki20SyntaxAsXHTML(wikiPage.getContent());
 		
 		Page wikiPage  = xWikiReadService.getPage(path);
-		Objects objects = mappingService.getPageObjects(wikiPage);
+		// TODO : Seems useless
+//		Objects objects = mappingService.getPageObjects(wikiPage);
 		Map<String, String> properties = xWikiObjectService.getProperties(wikiPage);
 	
 		ret.setHtmlContent(htmlContent);
 		ret.setWikiPage(wikiPage);
-		ret.setObjects(objects);
+//		ret.setObjects(objects);
 		ret.setProperties(properties);
-		
-		for (Entry<String, String> props : properties.entrySet()) {
-			LOGGER.info("prop found : {} -> {}", props.getKey(), props.getValue());
-		}
 		
 		// Attachments
 		if (null != wikiPage.getAttachments() && null != wikiPage.getAttachments().getAttachments()) {
@@ -90,7 +87,16 @@ public class XwikiFacadeService {
 		String url = pathHelper.getDownloadAttachlmentUrl(space, page, attachmentName);		
 		return mappingService.downloadAttachment(url);
 	}
-		
+	
+	
+
+	public byte[] downloadAttachment(String string) {
+		// TODO : Security
+		String url = pathHelper.getDownloadpath() + string;		
+		return mappingService.downloadAttachment(url);
+	}
+
+	
 	public String detectMimeType (String filename) {
         // TODO : ugly, should fetch the meta (mime type is availlable in xwiki service), but does not work for the blog image, special class and not appears in attachments list
 		if (filename.endsWith(".pdf")) {
