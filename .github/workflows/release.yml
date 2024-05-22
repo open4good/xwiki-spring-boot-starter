@@ -50,7 +50,7 @@ jobs:
       ###########################################   
                                 
       - name: Build  Maven site
-        working-directory: ./spring-boot-starter-xwiki   
+        working-directory: ./xwiki-spring-boot-starter   
         run: mvn --batch-mode clean install
                                               
      ############################################
@@ -139,7 +139,7 @@ jobs:
  #       uses: actions/configure-pages@v4    
 
 #      - name: Merge site
-#        working-directory: ./spring-boot-starter-xwiki      
+#        working-directory: ./xwiki-spring-boot-starter      
 #        run: cp -r target/staging/* src/main/site/maven/
                         
           
@@ -158,7 +158,7 @@ jobs:
         
         
       - name: Publish package
-        working-directory: ./spring-boot-starter-xwiki  
+        working-directory: ./xwiki-spring-boot-starter  
         env:
           MAVEN_USERNAME: ${{ secrets.JRELEASER_NEXUS2_USERNAME }}
           MAVEN_CENTRAL_TOKEN: ${{ secrets.JRELEASER_NEXUS2_PASSWORD }}
