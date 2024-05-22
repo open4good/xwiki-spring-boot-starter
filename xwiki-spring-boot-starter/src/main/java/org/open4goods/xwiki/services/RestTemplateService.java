@@ -79,6 +79,7 @@ public class RestTemplateService {
 	 * @param viewUrl
 	 * @return
 	 */
+	
 	public ResponseEntity<String> getWebResponse( String xwikiWebUrl ){
 
 		ResponseEntity<String> response = null;

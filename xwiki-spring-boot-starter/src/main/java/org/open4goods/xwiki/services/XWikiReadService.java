@@ -14,6 +14,7 @@ import org.open4goods.xwiki.config.XWikiConstantsResourcesPath;
 import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import org.xwiki.rest.model.jaxb.Attachment;
@@ -71,6 +72,7 @@ public class XWikiReadService {
 	 * @return the Page object from GET request 
 	 * 
 	 */
+	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)
 	public Page getPage(String... path) throws ResponseStatusException {
 
 		
@@ -102,6 +104,7 @@ public class XWikiReadService {
 	 * @return the Pages object from GET request 
 	 * 
 	 */
+	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)
 	public Pages getPages(String spacePath) throws ResponseStatusException {
 		// replace '.' with '/spaces/' to get all nested spaces if needed
 		String pathToPages = spacePath.replace(".", "/spaces/");
@@ -116,6 +119,7 @@ public class XWikiReadService {
 	 * @param spacePath
 	 * @return A List of 'Page' object, could be empty, never null
 	 */
+	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)
 	public List<Page> getPagesList(String spacePath) throws ResponseStatusException {
 		
 		Pages pages = null;
@@ -201,6 +205,7 @@ public class XWikiReadService {
 	 * @param pageName name of 'page'
 	 * @return
 	 */
+	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)
 	public Map<String,String> getProperties(String spaces, String pageName) throws ResponseStatusException {
 		Map<String,String> props = new HashMap<String, String>();
 		// replace '.' with '/spaces/' to get all nested spaces if needed
@@ -226,6 +231,7 @@ public class XWikiReadService {
 	 * TODO : XwikiAuthService
 	 * @return
 	 */
+	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)
 	public List<String> getGroupsName(){
 		List<String> groups = new ArrayList<String>();
 		SearchResults results = this.mappingService.mapSearchResults(resourcesPathManager.getGroupsEndpoint());
@@ -248,6 +254,7 @@ public class XWikiReadService {
 	 * @param groupPageName
 	 * @return
 	 */
+//	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)
 	public List<String> getGroupUsers(String groupPageName) {
 		// https://wiki.nudger.fr/rest/wikis/xwiki/spaces/XWiki/pages/SiteEditor/objects?media=json
 		List<String> users = new ArrayList<String>();

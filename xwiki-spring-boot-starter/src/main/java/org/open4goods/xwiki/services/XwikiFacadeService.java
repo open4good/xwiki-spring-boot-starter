@@ -1,7 +1,6 @@
 package org.open4goods.xwiki.services;
 
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.open4goods.xwiki.config.UrlManagementHelper;
@@ -10,9 +9,8 @@ import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.open4goods.xwiki.model.FullPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
+import org.springframework.cache.annotation.Cacheable;
 import org.xwiki.rest.model.jaxb.Attachment;
-import org.xwiki.rest.model.jaxb.Objects;
 import org.xwiki.rest.model.jaxb.Page;
 import org.xwiki.rest.model.jaxb.Pages;
 
@@ -49,6 +47,7 @@ public class XwikiFacadeService {
 	}
 	
 	// TODO : I18n
+	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)
 	public FullPage getFullPage (String... path) {
 		FullPage ret = new FullPage();
 		

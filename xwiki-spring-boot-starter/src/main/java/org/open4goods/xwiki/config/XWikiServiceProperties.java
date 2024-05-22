@@ -15,6 +15,9 @@ import jakarta.validation.constraints.NotNull;
 @Validated
 public class XWikiServiceProperties{
 	
+	// TODO : Critical : Must be configurable in config
+	public final static String SPRING_CACHE_NAME = "ONE_HOUR_LOCAL_CACHE";
+	
 	@NotNull
 	public String baseUrl;
 

@@ -9,6 +9,7 @@ import org.open4goods.xwiki.config.XWikiConstantsResourcesPath;
 import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.convert.ConversionException;
 import org.springframework.http.ResponseEntity;
 import org.xwiki.component.embed.EmbeddableComponentManager;
@@ -54,7 +55,7 @@ public class XWikiHtmlService {
 //	}
 	
 	
-	
+	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)
 	public String html( String xwikiPath) {
 		
 		return getWebPage(xwikiPath, false);
@@ -69,6 +70,7 @@ public class XWikiHtmlService {
 	 * 	 * TOTO : Remove when rendering client side possible (waiting for jakarta migration)
 	 */
 	// TODO: manage response error / exceptions
+	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)
 	public String getWebPage( String xwikiPath, boolean withAbsolutePath ) {
 		
 		String MARKER = "<div id=\"xwikicontent\" class=\"col-xs-12\">";
@@ -113,6 +115,7 @@ public class XWikiHtmlService {
 	 * @param xwikiRelativeUrl
 	 * @return
 	 */
+	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)	
 	public String getHtmlClassWebPage(String xwikiRelativeUrl) {
 	
 		
