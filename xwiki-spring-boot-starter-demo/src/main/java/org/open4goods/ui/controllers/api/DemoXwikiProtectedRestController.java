@@ -68,7 +68,7 @@ public class DemoXwikiProtectedRestController {
 					
 	@GetMapping( "page/spaces/{spaces:.+}/pageName/{pageName}" )
 	public Page getPage( @PathVariable("spaces") String spaces, @PathVariable("pageName")  String pageName ) {
-		Page wikiPage = xwikiReadService.getPage(spaces, pageName);
+		Page wikiPage = xwikiReadService.getPage(spaces+":"+ pageName);
 		return wikiPage;
 	}
 
