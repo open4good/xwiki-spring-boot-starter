@@ -90,7 +90,7 @@ public class RestTemplateService {
 				HttpEntity<String> request = new HttpEntity<String>(headers);
 				response = restTemplate.exchange(xwikiWebUrl, HttpMethod.GET, request, String.class);
 			} catch(Exception e) {
-				logger.warn("Exception while trying to reach url:{} - error:{}", xwikiWebUrl, e.getMessage());
+				logger.error("Exception while trying to reach url:{} - error:{}", xwikiWebUrl, e.getMessage());
 			}
 			// check response status code
 			if (null != response && ! response.getStatusCode().is2xxSuccessful()) {
@@ -117,7 +117,7 @@ public class RestTemplateService {
 				response = restTemplate.exchange(url, HttpMethod.GET, request, byte[].class);
 			
 			} catch(Exception e) {
-				logger.warn("Exception while trying to reach url:{} - error:{}", url, e.getMessage());
+				logger.error("Exception while trying to reach url:{} - error:{}", url, e.getMessage());
 			}
 			// check response status code
 			if (null != response && ! response.getStatusCode().is2xxSuccessful()) {
