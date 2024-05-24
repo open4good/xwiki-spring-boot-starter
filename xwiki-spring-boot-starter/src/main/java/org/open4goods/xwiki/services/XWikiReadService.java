@@ -73,8 +73,10 @@ public class XWikiReadService {
 	 * 
 	 */
 	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)
-	public Page getPage(String... path) throws ResponseStatusException {
+	public Page getPage(String wikiPath) throws ResponseStatusException {
 
+		// TODO : Mutualize
+		String [] path = wikiPath.split("/|\\.|:");
 		
 		if (path.length < 2) {
 			LOGGER.warn("Must have at least a space and a page name");
