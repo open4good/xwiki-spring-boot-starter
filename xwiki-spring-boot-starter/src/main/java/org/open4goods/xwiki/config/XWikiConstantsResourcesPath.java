@@ -1,5 +1,6 @@
 package org.open4goods.xwiki.config;
 
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * handles path for endpoints
@@ -96,6 +97,14 @@ public class XWikiConstantsResourcesPath {
 				URI_SEPARATOR +
 				EDIT_PATH +
 				URI_SEPARATOR;
+	}
+	
+	/**
+	 * returns the path to get xwiki web page
+	 * @return
+	 */
+	public String getEditpath(String... path) {
+		return getEditpath() + StringUtils.join(path,"/");
 	}
 	
 	/**

@@ -65,12 +65,6 @@ public class XwikiFacadeService {
 //		ret.setObjects(objects);
 		ret.setProperties(properties);
 		
-		// Attachments
-		if (null != wikiPage.getAttachments() && null != wikiPage.getAttachments().getAttachments()) {
-			for (Attachment att : wikiPage.getAttachments().getAttachments()) {
-				System.out.println(att.getXwikiRelativeUrl());				
-			}
-		}		
 		
 		return ret;		
 	}
@@ -153,6 +147,14 @@ public class XwikiFacadeService {
 
 	public void setProperties(XWikiServiceProperties properties) {
 		this.properties = properties;
+	}
+
+	public XWikiConstantsResourcesPath getPathHelper() {
+		return pathHelper;
+	}
+
+	public void setPathHelper(XWikiConstantsResourcesPath pathHelper) {
+		this.pathHelper = pathHelper;
 	}
 
 
