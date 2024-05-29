@@ -268,7 +268,7 @@ public class XwikiMappingService {
 	/**
 	 * 
 	 * @param url
-	 * TODO : Should provide a streamed version 
+	 * TODO : Should provide a streamed version. See IcecatFeatureService.downloadTo()
 	 * @return
 	 */
 	public byte[] downloadAttachment( String url ) {
