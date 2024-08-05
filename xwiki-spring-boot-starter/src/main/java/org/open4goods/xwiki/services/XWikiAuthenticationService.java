@@ -6,12 +6,14 @@ import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.open4goods.xwiki.XWikiServiceConfiguration;
 import org.open4goods.xwiki.config.UrlManagementHelper;
 import org.open4goods.xwiki.config.XWikiConstantsResourcesPath;
 import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -53,6 +55,7 @@ public class XWikiAuthenticationService {
 	 * @return List of groups belonging to the current user
 	 * @throws Exception
 	 */
+	@Cacheable(cacheNames = XWikiServiceConfiguration.ONE_HOUR_LOCAL_CACHE_NAME)
 	public List<String> login( String userName, String password) throws Exception {
 		
 		List<String> groups = null;

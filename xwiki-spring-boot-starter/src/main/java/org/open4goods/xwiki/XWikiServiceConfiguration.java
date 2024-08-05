@@ -1,16 +1,18 @@
 package org.open4goods.xwiki;
 
 
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
 import org.open4goods.xwiki.authentication.XwikiAuthenticationProvider;
-import org.open4goods.xwiki.config.XWikiConstantsResourcesPath;
 import org.open4goods.xwiki.config.XWikiServiceProperties;
-import org.open4goods.xwiki.services.XwikiMappingService;
 import org.open4goods.xwiki.services.RestTemplateService;
 import org.open4goods.xwiki.services.XWikiAuthenticationService;
 import org.open4goods.xwiki.services.XWikiHtmlService;
 import org.open4goods.xwiki.services.XWikiObjectService;
 import org.open4goods.xwiki.services.XWikiReadService;
 import org.open4goods.xwiki.services.XwikiFacadeService;
+import org.open4goods.xwiki.services.XwikiMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +20,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.caffeine.CaffeineCache;
+import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
+
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.Ticker;
 
 /**
  * This Configuration class handles :
@@ -33,6 +41,9 @@ import org.springframework.web.client.RestTemplate;
 public class XWikiServiceConfiguration {
 	
 	private static final Logger logger = LoggerFactory.getLogger(XWikiServiceConfiguration.class);
+
+	// Cache name used for caching the result of the login method
+	public static final String ONE_HOUR_LOCAL_CACHE_NAME = "ONE_HOUR_LOCAL_CACHE";
 
 	private XWikiServiceProperties xWikiProperties;
 
@@ -241,6 +252,25 @@ public class XWikiServiceConfiguration {
 		return new XwikiAuthenticationProvider(xwikiAuthService);
 	}
 	
+	
+//	
+//	@Bean
+//	CacheManager cacheManager(@Autowired final Ticker ticker) {
+//		final CaffeineCache hCache = buildCache(ONE_HOUR_LOCAL_CACHE_NAME, ticker, 60);
+//		final SimpleCacheManager manager = new SimpleCacheManager();
+//		manager.setCaches(Arrays.asList( hCache));
+//		return manager;
+//	}
+//
+//	private CaffeineCache buildCache(final String name, final Ticker ticker, final int minutesToExpire) {
+//		return new CaffeineCache(name,
+//				Caffeine.newBuilder().expireAfterWrite(minutesToExpire, TimeUnit.MINUTES).ticker(ticker).build());
+//	}
+//
+//	@Bean
+//	Ticker ticker() {
+//		return Ticker.systemTicker();
+//	}
 	
 //	@Bean
 // TODO  : Test with RestClient or remove it
