@@ -1,6 +1,15 @@
 package org.open4goods.xwiki.services;
 
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,7 +24,11 @@ import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseExtractor;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import org.xwiki.rest.model.jaxb.Attachment;
 import org.xwiki.rest.model.jaxb.Attachments;
@@ -42,13 +55,15 @@ public class XWikiReadService {
 	private XWikiConstantsResourcesPath resourcesPathManager;
 	private XwikiMappingService mappingService;
 	private UrlManagementHelper urlHelper;
-	
-	public XWikiReadService (XwikiMappingService mappingService, XWikiServiceProperties xWikiProperties) {
+	private RestTemplate webTemplate;
+
+	public XWikiReadService (XwikiMappingService mappingService, XWikiServiceProperties xWikiProperties, RestTemplate webTemplate) {
 		
 		this.xWikiProperties = xWikiProperties;
 		this.mappingService = mappingService;
 		this.resourcesPathManager = new XWikiConstantsResourcesPath(xWikiProperties.getBaseUrl(), xWikiProperties.getApiEntrypoint(), xWikiProperties.getApiWiki());
 		this.urlHelper = new UrlManagementHelper(xWikiProperties);
+		this.webTemplate = webTemplate;
 		
 		
 		//		TODO: check that wiki exists !!
@@ -312,34 +327,34 @@ public class XWikiReadService {
 	 * @throws TechnicalException
 	 * @throws InvalidParameterException
 	 */
-//	public void exportXwikiContent ( File destFile) {
-//
-//		// Optional Accept header
-//		RequestCallback requestCallback = request -> {
-//			try (OutputStreamWriter writer = new OutputStreamWriter(request.getBody(), StandardCharsets.UTF_8)) {
-//				writer.write("name=all&description=&licence=&author=XWiki.Admin&version=&history=false&backup=true");
-//
-//			} catch(IOException ioe) {
-//
-//			} catch(Exception e) {
-//
-//			}
-//		};
-//
-//		// Streams the response instead of loading it all in memory
-//		ResponseExtractor<Void> responseExtractor = response -> {
-//			// Here I write the response to a file but do what you like
-//			Path path = Paths.get(destFile.getAbsolutePath());
-//			Files.copy(response.getBody(), path);
-//			return null;
-//		};
-//
-//		if (destFile.exists()) {
-//			destFile.delete();
-//		}
-//		
-//		
-//		restTemplate.execute(URI.create( resourcesPathManager.getBaseUrl() + "/xwiki/bin/export/XWiki/XWikiPreferences?editor=globaladmin&section=Export"), HttpMethod.POST, requestCallback, responseExtractor);
-//	}
+	public void exportXwikiContent ( File destFile) {
+
+		// Optional Accept header
+		RequestCallback requestCallback = request -> {
+			try (OutputStreamWriter writer = new OutputStreamWriter(request.getBody(), StandardCharsets.UTF_8)) {
+				writer.write("name=all&description=&licence=&author=XWiki.Admin&version=&history=false&backup=true");
+
+			} catch(IOException ioe) {
+
+			} catch(Exception e) {
+
+			}
+		};
+
+		// Streams the response instead of loading it all in memory
+		ResponseExtractor<Void> responseExtractor = response -> {
+			// Here I write the response to a file but do what you like
+			Path path = Paths.get(destFile.getAbsolutePath());
+			Files.copy(response.getBody(), path);
+			return null;
+		};
+
+		if (destFile.exists()) {
+			destFile.delete();
+		}
+		
+		
+		webTemplate.execute(URI.create( resourcesPathManager.getBaseUrl() + "/xwiki/bin/export/XWiki/XWikiPreferences?editor=globaladmin&section=Export"), HttpMethod.POST, requestCallback, responseExtractor);
+	}
 
 }
