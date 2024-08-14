@@ -165,13 +165,13 @@ public class XWikiServiceConfiguration {
 	 * @return
 	 */
 	@Bean( name = "xwikiReadService" )
-	XWikiReadService getXwikiReadService( @Qualifier("mappingService") XwikiMappingService mappingService, @Qualifier("webTemplate") RestTemplate webTemplate ) {
+	XWikiReadService getXwikiReadService( @Qualifier("mappingService") XwikiMappingService mappingService, RestTemplateService restTemplateService ) {
 		
 		XWikiReadService XWikiReadService = null;
 		try {
-			XWikiReadService = new XWikiReadService(mappingService, xWikiProperties, webTemplate);
+			XWikiReadService = new XWikiReadService(mappingService, xWikiProperties, restTemplateService);
 		} catch(Exception e) {
-			  logger.error("Unable to create XWikiReadService as bean. error message {}", e.getMessage());
+			  logger.error("Unable to create XWikiReadService bean. error message {}", e.getMessage());
 		}
 		return XWikiReadService;
 	}

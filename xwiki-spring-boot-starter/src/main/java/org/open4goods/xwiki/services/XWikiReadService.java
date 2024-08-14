@@ -2,7 +2,6 @@ package org.open4goods.xwiki.services;
 
 
 import java.io.File;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -24,11 +23,11 @@ import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import org.xwiki.rest.model.jaxb.Attachment;
 import org.xwiki.rest.model.jaxb.Attachments;
@@ -55,15 +54,15 @@ public class XWikiReadService {
 	private XWikiConstantsResourcesPath resourcesPathManager;
 	private XwikiMappingService mappingService;
 	private UrlManagementHelper urlHelper;
-	private RestTemplate webTemplate;
+	private RestTemplateService restTemplateService;
 
-	public XWikiReadService (XwikiMappingService mappingService, XWikiServiceProperties xWikiProperties, RestTemplate webTemplate) {
+	public XWikiReadService (XwikiMappingService mappingService, XWikiServiceProperties xWikiProperties, RestTemplateService restTemplateService) {
 		
 		this.xWikiProperties = xWikiProperties;
 		this.mappingService = mappingService;
 		this.resourcesPathManager = new XWikiConstantsResourcesPath(xWikiProperties.getBaseUrl(), xWikiProperties.getApiEntrypoint(), xWikiProperties.getApiWiki());
 		this.urlHelper = new UrlManagementHelper(xWikiProperties);
-		this.webTemplate = webTemplate;
+		this.restTemplateService = restTemplateService;
 		
 		
 		//		TODO: check that wiki exists !!
@@ -327,34 +326,40 @@ public class XWikiReadService {
 	 * @throws TechnicalException
 	 * @throws InvalidParameterException
 	 */
-	public void exportXwikiContent ( File destFile) {
+	public void exportXwikiContent(File destFile) {
 
-		// Optional Accept header
-		RequestCallback requestCallback = request -> {
-			try (OutputStreamWriter writer = new OutputStreamWriter(request.getBody(), StandardCharsets.UTF_8)) {
-				writer.write("name=all&description=&licence=&author=XWiki.Admin&version=&history=false&backup=true");
 
-			} catch(IOException ioe) {
+	    // Request callback to set headers and request body
+	    RequestCallback requestCallback = request -> {
+	        // Set the authentication headers
+	        request.getHeaders().addAll(restTemplateService.authenticatedHeaders());
 
-			} catch(Exception e) {
+	        // Write the body if required (in this case, form data)
+	        try (OutputStreamWriter writer = new OutputStreamWriter(request.getBody(), StandardCharsets.UTF_8)) {
+	            writer.write("filter=pristineInstalledExtensionDocument&attachment_jrcs=false&optimized=true&name=&description=&author=XWiki.o4g&licence=&version=");
+	        }
+	    };
 
-			}
-		};
+	    // Response extractor to stream the response to a file
+	    ResponseExtractor<Void> responseExtractor = response -> {
+	        // Stream the response body to the destination file
+	        Path path = Paths.get(destFile.getAbsolutePath());
+	        Files.copy(response.getBody(), path);
+	        return null;
+	    };
 
-		// Streams the response instead of loading it all in memory
-		ResponseExtractor<Void> responseExtractor = response -> {
-			// Here I write the response to a file but do what you like
-			Path path = Paths.get(destFile.getAbsolutePath());
-			Files.copy(response.getBody(), path);
-			return null;
-		};
+	    // Delete the destination file if it already exists
+	    if (destFile.exists()) {
+	        destFile.delete();
+	    }
 
-		if (destFile.exists()) {
-			destFile.delete();
-		}
-		
-		
-		webTemplate.execute(URI.create( resourcesPathManager.getBaseUrl() + "/xwiki/bin/export/XWiki/XWikiPreferences?editor=globaladmin&section=Export"), HttpMethod.POST, requestCallback, responseExtractor);
+	    // Execute the request with the headers, request body, and response handling
+	    restTemplateService.getWebTemplate().execute(
+	        URI.create(resourcesPathManager.getBaseUrl() + "/bin/export/XWiki/XWikiPreferences?editor=globaladmin&section=Export"), 
+	        HttpMethod.GET, 
+	        requestCallback, 
+	        responseExtractor
+	    );
 	}
 
 }

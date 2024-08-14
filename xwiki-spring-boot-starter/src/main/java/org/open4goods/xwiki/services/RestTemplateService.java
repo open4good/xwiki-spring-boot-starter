@@ -58,7 +58,7 @@ public class RestTemplateService {
 				updatedEndpoint = urlHelper.cleanUrl(endpoint);
 				logger.info("request xwiki server with endpoint {}", updatedEndpoint);
 				
-				HttpHeaders headers = authenticatedHeaders(properties);	
+				HttpHeaders headers = authenticatedHeaders();	
 				
 				HttpEntity<String> request = new HttpEntity<String>(headers);
 				response = restTemplate.exchange(updatedEndpoint, HttpMethod.GET, request, String.class);
@@ -86,7 +86,7 @@ public class RestTemplateService {
 		logger.info("request xwiki web server with url {}", xwikiWebUrl);
 		if(xwikiWebUrl != null) {
 			try {
-				HttpHeaders headers = authenticatedHeaders(properties);							
+				HttpHeaders headers = authenticatedHeaders();							
 				HttpEntity<String> request = new HttpEntity<String>(headers);
 				response = restTemplate.exchange(xwikiWebUrl, HttpMethod.GET, request, String.class);
 			} catch(Exception e) {
@@ -112,7 +112,7 @@ public class RestTemplateService {
 		if(url != null) {
 			try {
 				
-				HttpHeaders headers = authenticatedHeaders(properties);							
+				HttpHeaders headers = authenticatedHeaders();							
 				HttpEntity<String> request = new HttpEntity<String>(headers);
 				response = restTemplate.exchange(url, HttpMethod.GET, request, byte[].class);
 			
@@ -207,7 +207,7 @@ public class RestTemplateService {
 	 * @param password
 	 * @return
 	 */
-	private HttpHeaders authenticatedHeaders(String user, String password) {
+	public HttpHeaders authenticatedHeaders(String user, String password) {
 		String plainCreds = user +":"+password;
 		byte[] plainCredsBytes = plainCreds.getBytes();
 		byte[] base64CredsBytes = Base64.getEncoder().encode(plainCredsBytes);
@@ -223,8 +223,24 @@ public class RestTemplateService {
 	 * @param config
 	 * @return
 	 */
-	private HttpHeaders authenticatedHeaders(XWikiServiceProperties props) {
-		return authenticatedHeaders(props.getUsername(), props.getPassword());
+	public HttpHeaders authenticatedHeaders() {
+		return authenticatedHeaders(properties.getUsername(), properties.getPassword());
+	}
+
+	public RestTemplate getRestTemplate() {
+		return restTemplate;
+	}
+
+	public void setRestTemplate(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
+
+	public RestTemplate getWebTemplate() {
+		return webTemplate;
+	}
+
+	public void setWebTemplate(RestTemplate webTemplate) {
+		this.webTemplate = webTemplate;
 	}
 
 	
