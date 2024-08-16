@@ -299,9 +299,6 @@ public class XWikiReadService {
 		return page;
 	}
 	
-	
-
-	
 	/**
 	 * Get the user's properties
 	 * 
