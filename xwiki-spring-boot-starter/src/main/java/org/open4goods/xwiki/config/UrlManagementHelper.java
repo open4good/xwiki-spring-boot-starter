@@ -98,7 +98,7 @@ public class UrlManagementHelper {
 		String href = null;
 		
 		/** TODO : Argh, a Xwiki bug here. Spaces prefix are missing for objects and attachments
-		 * 
+		 *  @see https://jira.xwiki.org/browse/XWIKI-22440
 		 * Given the page 
 		 * 
 			<link href="http://wiki.nudger.fr/rest/wikis/xwiki/spaces/verticals/spaces/tv/spaces/technologies-tv/pages/WebHome" rel="self"/>
