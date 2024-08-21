@@ -63,10 +63,10 @@ public class RestTemplateService {
 				HttpEntity<String> request = new HttpEntity<String>(headers);
 				response = restTemplate.exchange(updatedEndpoint, HttpMethod.GET, request, String.class);
 			} catch(RestClientResponseException rcre) {
-				logger.warn("HttpClientErrorException exception  - uri:{} - error:{}", updatedEndpoint, rcre.getStackTrace());
+				logger.warn("HttpClientErrorException exception  - uri:{} ", updatedEndpoint, rcre);
 				throw new ResponseStatusException(rcre.getStatusCode(),rcre.getResponseBodyAsString());
 			} catch(Exception e) {
-				logger.warn("Exception while trying to reach endpoint:{} - error:{}", updatedEndpoint, e.getStackTrace());
+				logger.warn("Exception while trying to reach endpoint:{}", updatedEndpoint, e);
 				throw new ResponseStatusException(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build().getStatusCode(), e.getMessage());
 			}
 		}

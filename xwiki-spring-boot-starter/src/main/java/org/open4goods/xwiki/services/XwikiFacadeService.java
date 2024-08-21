@@ -48,14 +48,14 @@ public class XwikiFacadeService {
 	
 	// TODO : I18n
 	// @Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)
-	public FullPage getFullPage (String path) {
+	public FullPage getFullPage (String restPath) {
 		FullPage ret = new FullPage();
 		
-		String htmlContent = xWikiHtmlService.html(path.replaceAll("\\.|:","/"));
+		String htmlContent = xWikiHtmlService.html(restPath.replaceAll("\\.|:","/"));
 		// TODO : When xwiki jakarta compliant
 //		String htmlContent = xWikiHtmlService.renderXWiki20SyntaxAsXHTML(wikiPage.getContent());
 		
-		Page wikiPage  = xWikiReadService.getPage(path);
+		Page wikiPage  = xWikiReadService.getPage(restPath);
 		// TODO : Seems useless
 //		Objects objects = mappingService.getPageObjects(wikiPage);
 		Map<String, String> properties = xWikiObjectService.getProperties(wikiPage);

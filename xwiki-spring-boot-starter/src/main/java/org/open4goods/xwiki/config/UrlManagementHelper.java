@@ -96,17 +96,44 @@ public class UrlManagementHelper {
 	public String getHref(String rel, List<Link> links) {
 
 		String href = null;
-		try {
+		
+		/** TODO : Argh, a Xwiki bug here. Spaces prefix are missing for objects and attachments
+		 * 
+		 * Given the page 
+		 * 
+			<link href="http://wiki.nudger.fr/rest/wikis/xwiki/spaces/verticals/spaces/tv/spaces/technologies-tv/pages/WebHome" rel="self"/>
+		    <link href="http://wiki.nudger.fr/rest/wikis/xwiki/spaces/verticals/spaces/tv/spaces/technologies-tv" rel="http://www.xwiki.org/rel/space"/>
+			<link href="http://wiki.nudger.fr/rest/wikis/xwiki/spaces/verticals/tv/technologies-tv/pages/WebHome/history" rel="http://www.xwiki.org/rel/history"/>
+			<link href="http://wiki.nudger.fr/rest/wikis/xwiki/spaces/verticals/tv/technologies-tv/pages/WebHome/attachments" rel="http://www.xwiki.org/rel/attachments"/>
+			<link href="http://wiki.nudger.fr/rest/wikis/xwiki/spaces/verticals/tv/technologies-tv/pages/WebHome/objects" rel="http://www.xwiki.org/rel/objects"/>
+			<link href="http://wiki.nudger.fr/rest/syntaxes" rel="http://www.xwiki.org/rel/syntaxes"/>
+			<link href="http://wiki.nudger.fr/rest/wikis/xwiki/classes/verticals.tv.technologies-tv.WebHome" rel="http://www.xwiki.org/rel/class"/>
 
-			for(Link link: links) {
-				if(link.getRel().equals(rel)) {
-					href = link.getHref();
-				} 
-			}
-		} catch(Exception e) {
-			logger.warn("Exception while retrieving 'href' from link {}. Error Message: {}",rel,  e.getMessage());
+		 * 
+		 * we operate a manual suffix appending if objects or attachments is required 
+		 */
+		
+		
+		if (rel.equals("http://www.xwiki.org/rel/objects")) {
+			href = getHref("self", links) + "/objects";
+		} else if (rel.equals("http://www.xwiki.org/rel/attachments")) {
+			href = getHref("self", links) + "/attachments";
 		}
 		
+		else {
+			try {
+	
+				for(Link link: links) {
+					if(link.getRel().equals(rel)) {
+						href = link.getHref();
+						// No need to search more if found
+						break;
+					} 
+				}
+			} catch(Exception e) {
+				logger.warn("Exception while retrieving 'href' from link {}. Error Message: {}",rel,  e.getMessage());
+			}
+		}
 		// TODO : Tweak : Should be properly fixed on the wiki side (???). Or from conf, a "forceScheme"
 		
 		href = href.replace("http://", "https://");

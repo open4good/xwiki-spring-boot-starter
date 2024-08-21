@@ -81,14 +81,22 @@ public class XWikiReadService {
 	/**
 	 * Request the xwiki rest api to GET a xwiki Page resource from space path and page name.
 	 * Then create a XWiki Page Object from the rest response.
-	 * 
+	 * TODO : have to harden, adopt a convention
 	 * @param path to the page
 	 * @return the Page object from GET request 
 	 * 
 	 */
-	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)
-	public Page getPage(String wikiPath) throws ResponseStatusException {
+//	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)
+	public Page getPage(String pagePath) throws ResponseStatusException {
 
+		
+		String wikiPath = pagePath;
+		if (wikiPath.startsWith("/")) {
+			// Removing / prefix
+			wikiPath = wikiPath.substring(1);
+		}
+		
+		
 		// TODO : Mutualize
 		String [] path = wikiPath.split("/|\\.|:");
 		
@@ -104,6 +112,8 @@ public class XWikiReadService {
 		spacePath.append(StringUtils.join(spaces,"/spaces/"));
 		spacePath.append("/pages/");
 		spacePath.append(page);
+		
+		
 		
 		return this.mappingService.mapPage(spacePath.toString());
 	}
