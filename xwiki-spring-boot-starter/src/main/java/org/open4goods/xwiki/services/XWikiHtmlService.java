@@ -60,7 +60,17 @@ public class XWikiHtmlService {
 		
 		return getWebPage(xwikiPath, false);
 	}
-		
+	
+	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)
+	public String htmlWithProxifiedResource( String xwikiPath) {
+		String ret = getWebPage(xwikiPath, false);
+		// TODO : From const
+		// TODO : Make in generic ? Provide the associated resource controller ?
+		ret = ret.replace("/bin/download", XWikiHtmlService.PROXYFIED_FOLDER);
+		return ret;
+	}
+	
+	
 	/**
 	 * Returns xwiki web server response from wikiPage
 	 * with an absolute or relative path
