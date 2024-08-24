@@ -55,13 +55,13 @@ public class XWikiHtmlService {
 //	}
 	
 	
-	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)
+	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME, key = "#root.methodName + ':' + #xwikiPath")
 	public String html( String xwikiPath) {
 		
 		return getWebPage(xwikiPath, false);
 	}
 	
-	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)
+	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME, key = "#root.methodName + ':' + #xwikiPath")
 	public String htmlWithProxifiedResource( String xwikiPath) {
 		String ret = getWebPage(xwikiPath, false);
 		// TODO : From const
@@ -80,7 +80,7 @@ public class XWikiHtmlService {
 	 * 	 * TOTO : Remove when rendering client side possible (waiting for jakarta migration)
 	 */
 	// TODO: manage response error / exceptions
-	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)
+	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME, key = "#root.methodName + ':' + #xwikiPath +':' + #withAbsolutePath" )
 	public String getWebPage( String xwikiPath, boolean withAbsolutePath ) {
 		
 		String MARKER = "<div id=\"xwikicontent\" class=\"col-xs-12\">";
@@ -125,7 +125,7 @@ public class XWikiHtmlService {
 	 * @param xwikiRelativeUrl
 	 * @return
 	 */
-	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)	
+	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME, key = "#root.methodName + ':' + #xwikiRelativeUrl")	
 	public String getHtmlClassWebPage(String xwikiRelativeUrl) {
 	
 		

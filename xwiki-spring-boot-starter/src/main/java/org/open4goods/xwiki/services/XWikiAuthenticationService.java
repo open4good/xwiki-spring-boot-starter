@@ -55,7 +55,7 @@ public class XWikiAuthenticationService {
 	 * @return List of groups belonging to the current user
 	 * @throws Exception
 	 */
-	@Cacheable(cacheNames = XWikiServiceConfiguration.ONE_HOUR_LOCAL_CACHE_NAME)
+	@Cacheable(cacheNames = XWikiServiceConfiguration.ONE_HOUR_LOCAL_CACHE_NAME, key = "#root.methodName + ':' + #userName +  ':' + #password")
 	public List<String> login( String userName, String password) throws Exception {
 		
 		List<String> groups = null;

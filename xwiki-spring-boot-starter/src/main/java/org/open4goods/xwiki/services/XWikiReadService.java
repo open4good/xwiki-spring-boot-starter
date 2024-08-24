@@ -130,7 +130,7 @@ public class XWikiReadService {
 	 * @return the Pages object from GET request 
 	 * 
 	 */
-	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)
+	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME, key = "#root.methodName + ':' + #spacePath")
 	public Pages getPages(String spacePath) throws ResponseStatusException {
 		// replace '.' with '/spaces/' to get all nested spaces if needed
 		String pathToPages = spacePath.replace(".", "/spaces/");
@@ -145,7 +145,7 @@ public class XWikiReadService {
 	 * @param spacePath
 	 * @return A List of 'Page' object, could be empty, never null
 	 */
-	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)
+	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME, key = "#root.methodName + ':' + #spacePath")
 	public List<Page> getPagesList(String spacePath) throws ResponseStatusException {
 		
 		Pages pages = null;
@@ -231,7 +231,7 @@ public class XWikiReadService {
 	 * @param pageName name of 'page'
 	 * @return
 	 */
-	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)
+	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME, key = "#root.methodName + ':' + #spaces + ':' + #pageName")
 	public Map<String,String> getProperties(String spaces, String pageName) throws ResponseStatusException {
 		Map<String,String> props = new HashMap<String, String>();
 		// replace '.' with '/spaces/' to get all nested spaces if needed
@@ -257,8 +257,8 @@ public class XWikiReadService {
 	 * TODO : XwikiAuthService
 	 * @return
 	 */
-	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME)
-	public List<String> getGroupsName(){
+	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME, key = "#root.methodName")
+	public List<String> getXwikiGroupsName(){
 		List<String> groups = new ArrayList<String>();
 		SearchResults results = this.mappingService.mapSearchResults(resourcesPathManager.getGroupsEndpoint());
 		if( results != null && !results.getSearchResults().isEmpty()) {
