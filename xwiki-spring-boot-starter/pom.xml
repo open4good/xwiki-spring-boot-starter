@@ -177,7 +177,7 @@
 		<dependency>
 			<groupId>org.xwiki.rendering</groupId>
 			<artifactId>xwiki-rendering-api</artifactId>
-		    <version>16.6.0</version>
+		    <version>16.7.0</version>
 		</dependency>
 				
 
