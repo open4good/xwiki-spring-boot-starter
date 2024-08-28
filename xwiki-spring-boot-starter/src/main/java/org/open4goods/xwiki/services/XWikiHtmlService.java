@@ -4,7 +4,7 @@ import java.io.StringReader;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
 
-
+import org.apache.commons.lang3.StringUtils;
 import org.open4goods.xwiki.config.XWikiConstantsResourcesPath;
 import org.open4goods.xwiki.config.XWikiServiceProperties;
 import org.slf4j.Logger;
@@ -65,8 +65,10 @@ public class XWikiHtmlService {
 	public String htmlWithProxifiedResource( String xwikiPath) {
 		String ret = getWebPage(xwikiPath, false);
 		// TODO : From const
-		// TODO : Make in generic ? Provide the associated resource controller ?
-		ret = ret.replace("/bin/download", XWikiHtmlService.PROXYFIED_FOLDER);
+		// TODO : Make it generic ? Provide the associated resource controller ?
+		if (!StringUtils.isEmpty(ret)) {
+			ret = ret.replace("/bin/download", XWikiHtmlService.PROXYFIED_FOLDER);
+		}
 		return ret;
 	}
 	
@@ -207,7 +209,11 @@ public class XWikiHtmlService {
 	 * @return
 	 */
 	public String getEditPageUrl( String xwikiPath ) {	
-		return resourcesPathManager.getEditpath() + URLDecoder.decode(xwikiPath, Charset.defaultCharset());
+		
+		// Addinf the leading / if omitted
+		String path = xwikiPath.endsWith("/") ? xwikiPath : xwikiPath + "/";
+		
+		return resourcesPathManager.getEditpath() + URLDecoder.decode(path, Charset.defaultCharset());
 	}
 	
 	
