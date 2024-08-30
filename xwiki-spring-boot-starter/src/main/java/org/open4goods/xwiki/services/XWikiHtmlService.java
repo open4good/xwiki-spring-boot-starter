@@ -61,13 +61,18 @@ public class XWikiHtmlService {
 		return getWebPage(xwikiPath, false);
 	}
 	
-	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME, key = "#root.methodName + ':' + #xwikiPath")
-	public String htmlWithProxifiedResource( String xwikiPath) {
+	@Cacheable(cacheNames = XWikiServiceProperties.SPRING_CACHE_NAME, key = "#root.methodName + ':' + #xwikiPath + ':' + #plain")
+	public String htmlWithProxifiedResource( String xwikiPath, Boolean plain) {
 		String ret = getWebPage(xwikiPath, false);
 		// TODO : From const
 		// TODO : Make it generic ? Provide the associated resource controller ?
 		if (!StringUtils.isEmpty(ret)) {
 			ret = ret.replace("/bin/download", XWikiHtmlService.PROXYFIED_FOLDER);
+			
+			if (null != plain && plain.booleanValue()) {
+				// We remove the <p>
+				ret = ret.replace("<p>", "").replace("</p>","");
+			}
 		}
 		return ret;
 	}
@@ -108,9 +113,12 @@ public class XWikiHtmlService {
 				String body= raw.substring(0,raw.indexOf("\n"));
 
 				// Removing simple <p> tag if occurs
-				if (body.startsWith("<p>")) {
+				// NOTE : Tricky method to avoid <p> systematic style, but hat preserves multiple paragraphs
+				/*
+				if (body.startsWith("<p>") && body.endsWith("</p>") && StringUtils.countMatches(body,"<p>") == 1) {
 					body=body.substring(3,body.length()-4);
 				}
+				*/
 				htmlResult = body;
 			}
 			catch (Exception e) {
@@ -209,11 +217,7 @@ public class XWikiHtmlService {
 	 * @return
 	 */
 	public String getEditPageUrl( String xwikiPath ) {	
-		
-		// Addinf the leading / if omitted
-		String path = xwikiPath.endsWith("/") ? xwikiPath : xwikiPath + "/";
-		
-		return resourcesPathManager.getEditpath() + URLDecoder.decode(path, Charset.defaultCharset());
+		return resourcesPathManager.getEditpath() + URLDecoder.decode(xwikiPath, Charset.defaultCharset());
 	}
 	
 	
