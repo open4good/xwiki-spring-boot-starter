@@ -28,6 +28,7 @@ import org.xwiki.rest.model.jaxb.Wikis;
 import org.xwiki.rest.model.jaxb.Xwiki;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
@@ -400,7 +401,8 @@ public class XwikiMappingService {
 
 		Page page = null;
 		try {
-			ObjectMapper mapper = new ObjectMapper();
+			// TODO(p1,perf) : Do not re instanciate
+			ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			page = mapper.readValue(response.getBody(),new TypeReference<Page>(){});
 			logger.debug("Object 'Page' mapped correctly}");
 		}
